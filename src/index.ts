@@ -1,4 +1,5 @@
 import { callModel } from "./model";
+import { splitSentences } from "./split";
 import { DurableObject } from "cloudflare:workers";
 
 /**
@@ -56,6 +57,11 @@ export default {
 		if (url.pathname === "/api/ping-model") {
 			const res = await callModel(env as any, "你是測試助理。", "用一句繁體中文說：連線成功。");
 			return Response.json(res);
+		}
+		if (url.pathname === "/api/split") {
+			const file = await env.ASSETS.fetch(new URL("/rules/night-market.txt", request.url));
+			const sentences = splitSentences(await file.text());
+			return Response.json({ count: sentences.length, sentences });
 		}
 
 		// 測試房間物件（範本原本的功能，之後做房間會改寫）
