@@ -1,3 +1,4 @@
+import { callModel } from "./model";
 import { DurableObject } from "cloudflare:workers";
 
 /**
@@ -49,17 +50,22 @@ export default {
 	 * @returns The response to be sent back to the client
 	 */
 	async fetch(request, env, ctx): Promise<Response> {
-		// Create a stub to open a communication channel with the Durable Object
-		// instance named "foo".
-		//
-		// Requests from all Workers to the Durable Object instance named "foo"
-		// will go to a single remote Durable Object instance.
-		const stub = env.MY_DURABLE_OBJECT.getByName("foo");
+		const url = new URL(request.url);
 
-		// Call the `sayHello()` RPC method on the stub to invoke the method on
-		// the remote Durable Object instance.
-		const greeting = await stub.sayHello("world");
+		// 測試模型連線
+		if (url.pathname === "/api/ping-model") {
+			const res = await callModel(env as any, "你是測試助理。", "用一句繁體中文說：連線成功。");
+			return Response.json(res);
+		}
 
-		return new Response(greeting);
+		// 測試房間物件（範本原本的功能，之後做房間會改寫）
+		if (url.pathname === "/api/ping-room") {
+			const stub = env.MY_DURABLE_OBJECT.getByName("foo");
+			const greeting = await stub.sayHello("world");
+			return new Response(greeting);
+		}
+
+		// 其他路徑交給靜態網頁
+		return env.ASSETS.fetch(request);
 	},
 } satisfies ExportedHandler<Env>;
