@@ -31,7 +31,11 @@
 	"observability": {
 		"enabled": true
 	},
-	"upload_source_maps": true
+	"upload_source_maps": true,
+	"vars":{
+		"MODEL_BASE_URL":"https://api.deepseek.com",
+		"MODEL_ID": "deepseek-flash"
+	}
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
