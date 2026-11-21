@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>仲裁測試</title>
+<style>
+  body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 16px}
+  input,select,button{font-size:16px;padding:8px;width:100%;box-sizing:border-box;margin:4px 0 12px}
+  pre{background:#f4f4f4;padding:12px;white-space:pre-wrap;font-size:13px}
+</style></head>
+<body>
+<h2>仲裁測試（開發用）</h2>
+<label>模式</label>
+<select id="mode"><option value="duel">兩方對質</option><option value="ask">直接提問</option></select>
+<label>A 的主張</label><input id="a" value="擲到 6 可以一直再擲">
+<label>B 的主張</label><input id="b" value="擲到 6 只能再擲一次">
+<label>直接提問</label><input id="q" value="可以把攤位賣給別人嗎？">
+<button id="go">送出</button>
+<pre id="out">結果會顯示在這裡</pre>
+<script>
+document.getElementById("go").onclick = async () => {
+  const out = document.getElementById("out");
+  out.textContent = "裁定中⋯";
+  const t0 = Date.now();
+  const res = await fetch("/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      mode: document.getElementById("mode").value,
+      claim_a: document.getElementById("a").value,
+      claim_b: document.getElementById("b").value,
+      question: document.getElementById("q").value
+    })
+  });
+  const data = await res.json();
+  out.textContent = `HTTP ${res.status}．${((Date.now() - t0) / 1000).toFixed(1)} 秒\n\n` + JSON.stringify(data, null, 2);
+};
+</script>
+</body></html>

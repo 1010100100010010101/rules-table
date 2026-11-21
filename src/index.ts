@@ -1,3 +1,4 @@
+import { analyze } from "./analyze";
 import { callModel } from "./model";
 import { splitSentences } from "./split";
 import { DurableObject } from "cloudflare:workers";
@@ -62,6 +63,13 @@ export default {
 			const file = await env.ASSETS.fetch(new URL("/rules/night-market.txt", request.url));
 			const sentences = splitSentences(await file.text());
 			return Response.json({ count: sentences.length, sentences });
+		}
+		if (url.pathname === "/api/analyze" && request.method === "POST") {
+			const body = await request.json().catch(() => null);
+			if (!body) return Response.json({ error: "bad_input", message: "格式錯誤" }, { status: 400 });
+			const file = await env.ASSETS.fetch(new URL("/rules/night-market.txt", request.url));
+			const sentences = splitSentences(await file.text());
+			return analyze(body, sentences, env as any);
 		}
 
 		// 測試房間物件（範本原本的功能，之後做房間會改寫）
