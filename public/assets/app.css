@@ -263,3 +263,23 @@ details summary{cursor:pointer;font-weight:700;padding:2px 0}
   .hero h1{font-size:40px}
 }
 .top .sub{color:#c9d4e6}
+
+/* ---------- 介面語言切換（頂部） ---------- */
+.langs{display:flex;gap:2px;background:rgba(255,255,255,.12);border-radius:99px;padding:3px}
+.langs button{border:0;background:none;color:#c9d4e6;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px}
+.langs button.on{background:#fff;color:var(--ink)}
+
+/* ---------- 內建遊戲清單 ---------- */
+.presets{display:grid;gap:8px;margin-top:10px}
+.preset{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:#fff;color:var(--ink)}
+.preset.on{border-color:var(--board);background:var(--inf-soft);box-shadow:0 2px 0 var(--board)}
+.preset .pt{display:flex;align-items:center;gap:6px}
+.preset .pt b{flex:1;font-size:15.5px}
+.preset .pn{font-size:12px;font-weight:700;color:var(--mut);background:var(--soft);border-radius:99px;padding:1px 8px}
+.preset .ps{font-size:13px;color:var(--mut);margin-top:2px}
+
+/* ---------- 預設翻譯提示 ---------- */
+.trans{background:var(--inf-soft);border:2px solid #b9cdf1;border-radius:12px;padding:10px 12px;margin-top:12px;color:#1d4e98;font-size:14px}
+.trans .row{margin-top:6px}
+.trans label{display:flex;align-items:center;gap:8px;margin:0;font-weight:700;color:#1d4e98}
+.trans input[type=checkbox]{width:18px;height:18px;accent-color:var(--board)}

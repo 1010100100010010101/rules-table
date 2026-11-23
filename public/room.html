@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>房間｜規則仲裁桌</title>
+<title>規則仲裁桌</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2226%22 fill=%22%23f5b83d%22/%3E%3Cpath d=%22M50 18v62M32 80h36M24 34h52M24 34l-12 24a12 12 0 0 0 24 0zM76 34l-12 24a12 12 0 0 0 24 0z%22 fill=%22none%22 stroke=%22%231c2433%22 stroke-width=%227%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,22 +13,23 @@
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <a class="brand" href="/"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span><span id="title">規則仲裁桌</span></a>
+  <a class="brand" href="/"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span><span id="title" data-i18n="appName">規則仲裁桌</span></a>
   <span class="spacer"></span>
-  <button class="chip" id="codeChip" type="button" title="複製邀請連結"><span class="status off" id="conn"></span>房號 <span class="code" id="code">------</span></button>
+  <div class="langs" id="langs" role="group" aria-label="Language"></div>
+  <button class="chip" id="codeChip" type="button"><span class="status off" id="conn"></span><span data-i18n="roomCode"></span> <span class="code" id="code">------</span></button>
   <div class="avs" id="avs" style="width:100%"></div>
 </div></header>
 
 <main id="main">
   <!-- 加入前：填暱稱 -->
   <section class="card" id="joinCard" hidden>
-    <h2>加入房間</h2>
+    <h2 data-i18n="joinRoomTitle"></h2>
     <p class="muted" id="joinInfo"></p>
-    <label for="jname">你的暱稱</label>
-    <input type="text" id="jname" maxlength="12" placeholder="例如：小花">
-    <label>身分</label>
-    <div class="seg" id="roleSeg"><button data-v="player" class="on" type="button">玩家</button><button data-v="viewer" type="button">只看</button></div>
-    <button class="btn pri block" id="joinBtn" type="button" style="margin-top:12px">加入</button>
+    <label for="jname" data-i18n="yourName"></label>
+    <input type="text" id="jname" maxlength="12" data-i18n-ph="namePhB">
+    <label data-i18n="role"></label>
+    <div class="seg" id="roleSeg"><button data-v="player" class="on" type="button" data-i18n="rolePlayer"></button><button data-v="viewer" type="button" data-i18n="roleViewer"></button></div>
+    <button class="btn pri block" id="joinBtn" type="button" style="margin-top:12px" data-i18n="joinBtn"></button>
   </section>
 
   <section class="card" id="fatal" hidden></section>
@@ -36,31 +37,31 @@
   <!-- 分頁：裁定 -->
   <div id="tab-rule" class="stack" hidden>
     <section class="card" id="disputeForm">
-      <div class="seg" id="mseg"><button data-m="duel" class="on" type="button">兩方對質</button><button data-m="ask" type="button">直接提問</button></div>
+      <div class="seg" id="mseg"><button data-m="duel" class="on" type="button" data-i18n="modeDuel"></button><button data-m="ask" type="button" data-i18n="modeAsk"></button></div>
       <div id="duel">
-        <label for="a">A 的主張</label><input type="text" id="a" maxlength="120" placeholder="例如：擲到 6 可以一直再擲"><div class="cnt" id="ca"></div>
-        <label for="b">B 的主張</label><input type="text" id="b" maxlength="120" placeholder="例如：擲到 6 只能再擲一次"><div class="cnt" id="cb"></div>
+        <label for="a" data-i18n="claimA"></label><input type="text" id="a" maxlength="120" data-i18n-ph="claimAPh"><div class="cnt" id="ca"></div>
+        <label for="b" data-i18n="claimB"></label><input type="text" id="b" maxlength="120" data-i18n-ph="claimBPh"><div class="cnt" id="cb"></div>
       </div>
       <div id="ask" hidden>
-        <label for="q">問題</label><input type="text" id="q" maxlength="120" placeholder="例如：可以把攤位賣給別人嗎？"><div class="cnt" id="cq"></div>
+        <label for="q" data-i18n="question"></label><input type="text" id="q" maxlength="120" data-i18n-ph="questionPh"><div class="cnt" id="cq"></div>
       </div>
-      <p class="muted small" id="ctxNote" hidden></p>
-      <button class="btn pri block" id="send" type="button" style="margin-top:12px">請裁定</button>
-      <p class="muted small" style="margin:8px 0 0">送出後全桌手機都會看到同一張裁定卡。想自己先問清楚，用「私下問」。</p>
+      <p class="muted small" id="ctxNote" hidden data-i18n="ctxNote"></p>
+      <button class="btn pri block" id="send" type="button" style="margin-top:12px" data-i18n="sendDispute"></button>
+      <p class="muted small" style="margin:8px 0 0" data-i18n="sendNote"></p>
     </section>
-    <p class="muted" id="viewerNote" hidden>你是「只看」身分，可以看裁定，但不能提出爭議或投票。</p>
+    <p class="muted" id="viewerNote" hidden data-i18n="viewerNote"></p>
     <div id="disputes" class="stack"></div>
   </div>
 
   <!-- 分頁：私下問 -->
   <div id="tab-private" class="stack" hidden>
     <section class="card">
-      <div class="row"><span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg>只有你看得到</span><span class="spacer"></span><button class="btn sm" id="privClear" type="button">清除對話</button></div>
-      <p class="muted small">私下的答案只是參考，不算全桌裁定。只回答規則，不給策略建議；對話只存在這支手機。</p>
+      <div class="row"><span class="chip" data-i18n="onlyYou"></span><span class="spacer"></span><button class="btn sm" id="privClear" type="button" data-i18n="clearChat"></button></div>
+      <p class="muted small" data-i18n="privNote"></p>
       <div class="chat" id="chat"></div>
-      <label for="pq">問一句規則</label>
-      <input type="text" id="pq" maxlength="120" placeholder="例如：錢不夠付租金怎麼辦？"><div class="cnt" id="cpq"></div>
-      <button class="btn pri block" id="psend" type="button">送出</button>
+      <label for="pq" data-i18n="askOne"></label>
+      <input type="text" id="pq" maxlength="120" data-i18n-ph="privPh"><div class="cnt" id="cpq"></div>
+      <button class="btn pri block" id="psend" type="button" data-i18n="send"></button>
     </section>
   </div>
 
@@ -72,56 +73,57 @@
   <!-- 分頁：工具 -->
   <div id="tab-tools" class="stack" hidden>
     <section class="card">
-      <h3>擲骰子</h3>
-      <div class="seg" id="dseg"><button data-n="1" type="button">1 顆</button><button data-n="2" type="button">2 顆</button><button data-n="3" type="button">3 顆</button></div>
+      <h3 data-i18n="diceTitle"></h3>
+      <div class="seg" id="dseg"><button data-n="1" type="button"></button><button data-n="2" type="button"></button><button data-n="3" type="button"></button></div>
       <div id="diceOut" style="margin:14px 0"></div>
-      <button class="btn pri block" id="roll" type="button">擲骰</button>
-      <p class="muted small">由伺服器擲出，全桌同時看到同一個結果。第一回合陪玩中擲骰，點數會自動選好下一步。</p>
+      <button class="btn pri block" id="roll" type="button" data-i18n="roll"></button>
+      <p class="muted small" data-i18n="diceNote"></p>
       <div id="diceHist" class="row small muted"></div>
     </section>
     <section class="card">
-      <h3>玩家順序</h3>
+      <h3 data-i18n="seatsTitle"></h3>
       <div id="hints"></div>
       <div id="seats" class="stack" style="margin-top:8px"></div>
-      <div class="row" id="seatCtl" style="margin-top:10px"><button class="btn" id="shuffle" type="button">隨機抽順序</button><span class="muted small grow">房主可用 ↑↓ 調整；順時針方向就是清單順序。</span></div>
+      <div class="row" id="seatCtl" style="margin-top:10px"><button class="btn" id="shuffle" type="button" data-i18n="shuffle"></button><span class="muted small grow" data-i18n="seatsNote"></span></div>
     </section>
   </div>
 
   <!-- 分頁：房規與設定 -->
   <div id="tab-house" class="stack" hidden>
     <section class="card">
-      <div class="row"><h3 class="grow" style="margin:0">本桌房規</h3><button class="btn sm" id="copyHouse" type="button">複製文字</button></div>
+      <div class="row"><h3 class="grow" style="margin:0" data-i18n="houseTitle"></h3><button class="btn sm" id="copyHouse" type="button" data-i18n="copyText"></button></div>
       <div id="house"></div>
-      <label for="hprop">提案一條新房規</label>
-      <input type="text" id="hprop" maxlength="120" placeholder="例如：抽到颱風卡的人下一輪免租">
-      <button class="btn" id="hpropBtn" type="button" style="margin-top:8px">發起投票</button>
+      <label for="hprop" data-i18n="proposeRule"></label>
+      <input type="text" id="hprop" maxlength="120" data-i18n-ph="proposePh">
+      <button class="btn" id="hpropBtn" type="button" style="margin-top:8px" data-i18n="startVoteBtn"></button>
       <div id="votes" class="stack"></div>
     </section>
-    <section class="card"><details><summary>規則書全文（<span id="scount">0</span> 句）</summary><div id="rulebook" class="list-ev"></div></details></section>
+    <section class="card"><details><summary id="rbSummary"></summary><div id="rulebook" class="list-ev"></div></details></section>
     <section class="card" id="sourceCard" hidden>
-      <h3>補充官方 FAQ 或勘誤</h3>
-      <p class="muted small">貼上的文字會編成 F1、F2⋯，裁定時優先於規則書（房規仍最優先）。</p>
-      <textarea id="srcText" maxlength="5000" placeholder="貼上 FAQ 或勘誤的文字"></textarea>
-      <button class="btn" id="srcBtn" type="button" style="margin-top:8px">加入補充來源</button>
+      <h3 data-i18n="faqTitle"></h3>
+      <p class="muted small" data-i18n="faqNote"></p>
+      <textarea id="srcText" maxlength="5000" data-i18n-ph="faqPh"></textarea>
+      <button class="btn" id="srcBtn" type="button" style="margin-top:8px" data-i18n="faqAdd"></button>
     </section>
     <section class="card">
-      <h3>房間</h3>
+      <h3 data-i18n="roomTitle"></h3>
+      <p class="muted small" id="roomLang" style="margin-top:0"></p>
       <div id="players" class="stack"></div>
       <p class="muted small" id="expiry"></p>
       <div id="closeBox" hidden>
-        <button class="btn danger" id="closeRoom" type="button">結束並刪除房間</button>
-        <span id="closeConfirm" hidden><button class="btn danger" id="closeYes" type="button">確定刪除</button> <button class="btn" id="closeNo" type="button">取消</button></span>
+        <button class="btn danger" id="closeRoom" type="button" data-i18n="closeRoom"></button>
+        <span id="closeConfirm" hidden><button class="btn danger" id="closeYes" type="button" data-i18n="confirmDelete"></button> <button class="btn" id="closeNo" type="button" data-i18n="cancel"></button></span>
       </div>
     </section>
   </div>
 </main>
 
 <nav class="tabs" id="tabs" hidden><div class="tabs-in">
-  <button data-t="rule" class="on" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span>裁定</button>
-  <button data-t="private" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></span>私下問</button>
-  <button data-t="guide" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 5h7.5a3.5 3.5 0 0 1 0 7h-5a3.5 3.5 0 0 0 0 7H17"/></svg></span>流程</button>
-  <button data-t="tools" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r=".9" fill="currentColor"/><circle cx="15.5" cy="15.5" r=".9" fill="currentColor"/><circle cx="12" cy="12" r=".9" fill="currentColor"/></svg></span>工具</button>
-  <button data-t="house" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 21H20M8 7h8"/></svg></span>房規</button>
+  <button data-t="rule" class="on" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span><span data-i18n="tabRule"></span></button>
+  <button data-t="private" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></span><span data-i18n="tabPrivate"></span></button>
+  <button data-t="guide" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="5" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 5h7.5a3.5 3.5 0 0 1 0 7h-5a3.5 3.5 0 0 0 0 7H17"/></svg></span><span data-i18n="tabGuide"></span></button>
+  <button data-t="tools" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r=".9" fill="currentColor"/><circle cx="15.5" cy="15.5" r=".9" fill="currentColor"/><circle cx="12" cy="12" r=".9" fill="currentColor"/></svg></span><span data-i18n="tabTools"></span></button>
+  <button data-t="house" type="button"><span class="i"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 21H20M8 7h8"/></svg></span><span data-i18n="tabHouse"></span></button>
 </div></nav>
 
 <script type="module" src="/assets/room.js"></script>

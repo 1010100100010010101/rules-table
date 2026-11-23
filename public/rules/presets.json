@@ -1,0 +1,39 @@
+[
+  {
+    "id": "night-market",
+    "players": "2–4",
+    "sample": true,
+    "title": { "zh-Hant": "《夜市攤主》示例", "zh-Hans": "《夜市摊主》示例", "en": "Night Market Vendors (sample)" },
+    "summary": { "zh-Hant": "我們自己寫的示例規則，19 句，適合先試玩。", "zh-Hans": "我们自己写的示例规则，19 句，适合先试玩。", "en": "A short sample game we wrote, 19 sentences. Good for a first try." }
+  },
+  {
+    "id": "monopoly",
+    "players": "2–6",
+    "title": { "zh-Hant": "大富翁", "zh-Hans": "大富翁", "en": "Monopoly" },
+    "summary": { "zh-Hant": "買地、收租、蓋房子，讓對手破產。常見玩法整理，非官方說明書。", "zh-Hans": "买地、收租、盖房子，让对手破产。常见玩法整理，非官方说明书。", "en": "Buy property, collect rent, build houses, bankrupt your rivals. A summary of common play, not the official rulebook." }
+  },
+  {
+    "id": "xiangqi",
+    "players": "2",
+    "title": { "zh-Hant": "中國象棋", "zh-Hans": "中国象棋", "en": "Xiangqi (Chinese chess)" },
+    "summary": { "zh-Hant": "楚河漢界，將死對方的將帥。", "zh-Hans": "楚河汉界，将死对方的将帅。", "en": "Checkmate the opposing General across the River." }
+  },
+  {
+    "id": "gomoku",
+    "players": "2",
+    "title": { "zh-Hant": "五子棋", "zh-Hans": "五子棋", "en": "Gomoku" },
+    "summary": { "zh-Hant": "先連成五顆的人獲勝，不採用禁手。", "zh-Hans": "先连成五颗的人获胜，不采用禁手。", "en": "First to make five in a row wins. No forbidden moves." }
+  },
+  {
+    "id": "reversi",
+    "players": "2",
+    "title": { "zh-Hant": "黑白棋", "zh-Hans": "黑白棋", "en": "Reversi" },
+    "summary": { "zh-Hant": "夾住對方的棋子翻成自己的顏色。", "zh-Hans": "夹住对方的棋子翻成自己的颜色。", "en": "Trap your opponent's discs to flip them to your color." }
+  },
+  {
+    "id": "big-two",
+    "players": "4",
+    "title": { "zh-Hant": "大老二", "zh-Hans": "锄大地（大老二）", "en": "Big Two" },
+    "summary": { "zh-Hant": "撲克牌遊戲，最先出完手牌的人獲勝。", "zh-Hans": "扑克牌游戏，最先出完手牌的人获胜。", "en": "A card game: be the first to play all your cards." }
+  }
+]

@@ -1,0 +1,24 @@
+1.1 Big Two is played by 4 players with a standard 52-card deck (no jokers).
+1.2 The first player to play all of their cards wins.
+2.1 Shuffle and deal 13 cards to each player.
+2.2 The player holding the 3 of clubs leads first, and the first play must include the 3 of clubs.
+3.1 Card ranks from low to high: 3, 4, 5, 6, 7, 8, 9, 10, J, Q, K, A, 2.
+3.2 Cards of the same rank are compared by suit, from low to high: clubs, diamonds, hearts, spades.
+3.3 So the lowest card is the 3 of clubs and the highest is the 2 of spades.
+4.1 You may play a single card, a pair (two cards of the same rank), or a five-card hand.
+4.2 Five-card hands from low to high: straight, flush, full house, four of a kind, straight flush.
+4.3 A straight is five cards of consecutive ranks, such as 5, 6, 7, 8, 9.
+4.4 A flush is five cards of the same suit.
+4.5 A full house is three cards of one rank plus a pair, such as 8, 8, 8, K, K.
+4.6 Four of a kind is four cards of one rank plus any one card.
+4.7 A straight flush is five cards of the same suit in consecutive ranks.
+5.1 After a play, the next player counterclockwise plays.
+5.2 To follow, you must play the same number of cards of the same type that beats the previous play; a higher five-card hand type beats a lower one.
+5.3 If you don't want to or can't play, you may pass.
+5.4 When everyone else passes, the last player to play wins the round and leads any type of play.
+6.1 Singles and pairs are compared by their highest card; pairs of the same rank are compared by the higher suit.
+6.2 Straights and straight flushes are compared by their highest card; if the ranks tie, compare suits.
+6.3 Flushes are compared by the rank of their highest card first, then by suit.
+6.4 Full houses are compared by the rank of the three cards; four of a kind by the rank of the four cards.
+7.1 The game ends when someone plays all their cards. The other players lose points based on how many cards they still hold; more cards means a bigger loss.
+7.2 Whether A or 2 can wrap around in a straight (for example J, Q, K, A, 2) varies by region; make it a house rule before you start.

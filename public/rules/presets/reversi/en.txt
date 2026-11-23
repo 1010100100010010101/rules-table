@@ -1,0 +1,12 @@
+1.1 Reversi is played by two players, Black and White. Black moves first.
+1.2 When the game ends, the player with more discs of their color on the board wins.
+2.1 Play on an 8×8 board; discs go inside the squares. Each disc is black on one side and white on the other.
+2.2 Start with four discs in the center squares placed diagonally: white on the top-left and bottom-right, black on the top-right and bottom-left.
+3.1 Players take turns placing one disc with their color facing up on an empty square.
+3.2 The new disc must trap at least one of the opponent's discs in a straight line (horizontal, vertical, or diagonal) between itself and another of your discs, with no empty squares in between.
+3.3 All trapped opposing discs are flipped to your color.
+3.4 A single move can trap discs in several directions at once; flip the trapped discs in every direction.
+3.5 If you have no move that traps an opposing disc, you must pass and your opponent moves again.
+3.6 You may not pass if you have a legal move.
+4.1 The game ends when neither player can move or the board is full.
+4.2 Count the discs. The player with more discs wins; equal counts are a draw.

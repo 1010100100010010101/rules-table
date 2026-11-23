@@ -1,0 +1,10 @@
+1.1 Gomoku is played by two players, Black and White. Black moves first.
+1.2 The first player to make an unbroken line of five stones of their color, horizontally, vertically, or diagonally, wins.
+2.1 Play on a 15×15 board. Stones are placed on the intersections.
+2.2 The board starts empty.
+3.1 Players take turns placing one of their stones on any empty intersection.
+3.2 Once placed, stones never move and are never captured.
+3.3 You may not pass.
+4.1 A line of exactly five or more than five stones (an overline) both count as a win.
+4.2 If the board fills up and no one has five in a row, the game is a draw.
+5.1 These rules use no forbidden moves. If your table wants tournament rules (for example, Black may not make double-threes, double-fours, or overlines), make them house rules before you start.

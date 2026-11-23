@@ -14,100 +14,110 @@
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <a class="brand" href="/"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span>規則仲裁桌</a>
+  <a class="brand" href="/"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span><span data-i18n="appName">規則仲裁桌</span></a>
+  <span class="spacer"></span>
+  <div class="langs" id="langs" role="group" aria-label="Language"></div>
 </div></header>
 
 <main>
   <section class="hero">
-    <h1>吵規則，不如翻規則書</h1>
-    <p>兩個人各說一句規則，AI 指出規則書裡哪一句支持誰。原句由程式照抄，AI 改不了。規則書沒寫到的，全桌投票定成房規。</p>
-    <div class="scene" aria-label="使用示範">
-      <div class="say"><span class="av" style="background:#2b6cb0">哲</span><p>擲到 6 可以一直再擲！</p></div>
-      <div class="say r"><span class="av" style="background:#b83280">花</span><p>不對，只能再擲一次。</p></div>
+    <h1 data-i18n="heroTitle">吵規則，不如翻規則書</h1>
+    <p data-i18n="heroBody"></p>
+    <div class="scene">
+      <div class="say"><span class="av" style="background:#2b6cb0" id="demoAvA">哲</span><p data-i18n="demoSayA"></p></div>
+      <div class="say r"><span class="av" style="background:#b83280" id="demoAvB">花</span><p data-i18n="demoSayB"></p></div>
       <div class="verdict-demo">
-        <span class="kind k-explicit">明文</span>
-        <div class="vm">小花的說法符合規則</div>
-        <div class="ev"><span class="cid">4.2-2</span><span>額外擲骰的結果不會再觸發本條效果。</span></div>
+        <span class="kind k-explicit" data-i18n="kind.explicit"></span>
+        <div class="vm" data-i18n="demoVerdict"></div>
+        <div class="ev"><span class="cid">4.2-2</span><span data-i18n="demoQuote"></span></div>
       </div>
     </div>
   </section>
 
   <div class="door" id="door" role="tablist">
-    <button type="button" data-v="create" class="on" role="tab">開新桌子</button>
-    <button type="button" data-v="join" role="tab">加入朋友的桌子</button>
+    <button type="button" data-v="create" class="on" role="tab" data-i18n="doorCreate"></button>
+    <button type="button" data-v="join" role="tab" data-i18n="doorJoin"></button>
   </div>
 
   <section class="card" id="createCard">
-    <h2>開一張桌子</h2>
-    <p class="muted">你會成為房主。其他人用手機輸入房號或打開連結就能加入，不用註冊。</p>
-    <label for="cname">你的暱稱</label>
-    <input type="text" id="cname" maxlength="12" placeholder="例如：阿哲">
-    <label>規則書從哪裡來</label>
+    <h2 data-i18n="createTitle"></h2>
+    <p class="muted" data-i18n="createDesc"></p>
+    <label for="cname" data-i18n="yourName"></label>
+    <input type="text" id="cname" maxlength="12" data-i18n-ph="namePhA">
+    <label data-i18n="srcLabel"></label>
     <div class="seg" id="srcSeg">
-      <button data-v="sample" class="on" type="button">示例遊戲</button>
-      <button data-v="photo" type="button">拍照上傳</button>
-      <button data-v="paste" type="button">貼上文字</button>
+      <button data-v="preset" class="on" type="button" data-i18n="srcPreset"></button>
+      <button data-v="photo" type="button" data-i18n="srcPhoto"></button>
+      <button data-v="paste" type="button" data-i18n="srcPaste"></button>
     </div>
-    <p class="muted small" id="sampleNote" style="margin:8px 0 0">《夜市攤主》是我們自己寫的示例規則，19 句，適合先試玩。</p>
+
+    <div id="presetBox">
+      <p class="muted small" id="presetsMsg" style="margin:8px 0 0"></p>
+      <div class="presets" id="presets"></div>
+      <p class="muted small" style="margin:8px 0 0" data-i18n="presetsNote"></p>
+    </div>
 
     <div id="photoBox" hidden>
       <label class="drop" for="photoIn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.5"/></svg>
-        <b>拍規則書，或從相簿選照片</b>
-        <span>一頁一張，最多 8 頁。照片只用來辨識文字，不會保存。</span>
+        <b data-i18n="photoDrop"></b>
+        <span data-i18n="photoHint"></span>
       </label>
       <input type="file" id="photoIn" accept="image/*" multiple hidden>
       <div class="thumbs" id="thumbs"></div>
-      <button class="btn acc block" id="ocrBtn" type="button" style="margin-top:12px" hidden>辨識文字</button>
+      <button class="btn acc block" id="ocrBtn" type="button" style="margin-top:12px" hidden></button>
       <p class="muted small" id="ocrMsg" style="margin:8px 0 0"></p>
     </div>
 
     <div id="pasteBox" hidden>
-      <div class="warnbox small" id="reviewNote" hidden style="margin-top:12px">AI 抄寫的文字可能有錯字。請對照照片看一遍，標成〔看不清〕的地方要補上或刪掉，確認後才建立房間。之後的裁定都只會引用這份文字。</div>
-      <label for="ctitle">遊戲名稱</label>
-      <input type="text" id="ctitle" maxlength="30" placeholder="例如：我們的大富翁">
-      <label for="ctext">規則文字</label>
-      <textarea id="ctext" maxlength="20000" placeholder="每行一條，開頭寫條號最好，例如：&#10;4.2 擲出 6 點時，可立即額外擲骰一次。&#10;沒有條號也可以，會依段落自動編號。"></textarea>
-      <div class="row" style="margin-top:6px"><span class="muted small grow" id="pcount">最多 20,000 字</span><button class="btn sm" id="pbtn" type="button">預覽編號</button></div>
+      <div class="warnbox small" id="reviewNote" hidden style="margin-top:12px" data-i18n="reviewNote"></div>
+      <div class="trans" id="trans" hidden></div>
+      <label for="ctitle" data-i18n="gameTitle"></label>
+      <input type="text" id="ctitle" maxlength="30" data-i18n-ph="gameTitlePh">
+      <label for="ctext" data-i18n="rulesText"></label>
+      <textarea id="ctext" maxlength="20000" data-i18n-ph="rulesPh"></textarea>
+      <div class="row" style="margin-top:6px"><span class="muted small grow" id="pcount"></span><button class="btn sm" id="pbtn" type="button" data-i18n="previewBtn"></button></div>
       <div id="pview" class="list-ev"></div>
     </div>
     <div id="cerr"></div>
-    <button class="btn pri block" id="create" type="button" style="margin-top:16px">建立房間</button>
+    <button class="btn pri block" id="create" type="button" style="margin-top:16px" data-i18n="createBtn"></button>
   </section>
 
   <section class="card" id="joinCardHome" hidden>
-    <h2>加入朋友的桌子</h2>
-    <p class="muted">跟房主要 6 碼房號，或直接打開他傳的連結。</p>
-    <label for="jcode">房號</label>
-    <input type="text" id="jcode" maxlength="6" placeholder="例如 K7Q2M9" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;letter-spacing:.2em;font-size:20px">
-    <label for="jname">你的暱稱</label>
-    <input type="text" id="jname" maxlength="12" placeholder="例如：小花">
-    <label>身分</label>
-    <div class="seg" id="roleSeg"><button data-v="player" class="on" type="button">玩家</button><button data-v="viewer" type="button">只看</button></div>
+    <h2 data-i18n="joinTitle"></h2>
+    <p class="muted" data-i18n="joinDesc"></p>
+    <label for="jcode" data-i18n="roomCode"></label>
+    <input type="text" id="jcode" maxlength="6" data-i18n-ph="codePh" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;letter-spacing:.2em;font-size:20px">
+    <label for="jname" data-i18n="yourName"></label>
+    <input type="text" id="jname" maxlength="12" data-i18n-ph="namePhB">
+    <label data-i18n="role"></label>
+    <div class="seg" id="roleSeg"><button data-v="player" class="on" type="button" data-i18n="rolePlayer"></button><button data-v="viewer" type="button" data-i18n="roleViewer"></button></div>
     <div id="jerr"></div>
-    <button class="btn pri block" id="join" type="button" style="margin-top:16px">加入</button>
+    <button class="btn pri block" id="join" type="button" style="margin-top:16px" data-i18n="joinBtn"></button>
   </section>
 
   <section class="card">
     <div class="row">
       <div class="grow">
-        <h3 style="margin:0 0 2px">一個人先試試</h3>
-        <p class="muted small" style="margin:0">不開房間，直接問示例遊戲的規則。</p>
+        <h3 style="margin:0 0 2px" data-i18n="soloTitle"></h3>
+        <p class="muted small" style="margin:0" data-i18n="soloDesc"></p>
       </div>
-      <a class="btn" href="/solo.html">單機試用</a>
+      <a class="btn" href="/solo.html" data-i18n="soloBtn"></a>
     </div>
   </section>
 
-  <p class="foot">房間在最後一次活動 48 小時後自動刪除。只記錄暱稱，不收集真名、電話或位置。</p>
+  <p class="foot" data-i18n="foot"></p>
 </main>
 
 <script type="module">
 import { $, el, deviceId, store, COLORS } from "/assets/common.js";
+import { dict, fmt, getLang, applyI18n, langSwitch, detectLang } from "/assets/i18n.js";
 
+let lang = getLang(), t = dict(lang);
+let src = "preset", role = "player", preset = "night-market", presets = [];
 const name = store("name") || "";
 $("cname").value = name;
 $("jname").value = name;
-let src = "sample", role = "player";
 
 function seg(id, cb) {
   $(id).addEventListener("click", (e) => {
@@ -124,10 +134,11 @@ function showDoor(v) {
 seg("door", showDoor);
 function showSrc(v) {
   src = v;
-  $("sampleNote").hidden = v !== "sample";
+  $("presetBox").hidden = v !== "preset";
   $("photoBox").hidden = v !== "photo";
-  $("pasteBox").hidden = v === "sample" || (v === "photo" && !$("ctext").value.trim());
+  $("pasteBox").hidden = v === "preset" || (v === "photo" && !$("ctext").value.trim());
   $("reviewNote").hidden = v !== "photo";
+  showErr("cerr", "");
 }
 seg("srcSeg", showSrc);
 seg("roleSeg", (v) => { role = v; });
@@ -140,17 +151,121 @@ function color() {
 function showErr(id, msg) { const b = $(id); b.replaceChildren(); if (msg) { const e = el("div", "err", msg); e.style.marginTop = "12px"; b.append(e); } }
 const post = (url, body) => fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
-function updateCount() { $("pcount").textContent = `${$("ctext").value.length.toLocaleString()} / 20,000 字`; }
-$("ctext").addEventListener("input", updateCount);
+// ---------- 語言 ----------
+function applyLang(l) {
+  lang = l; t = dict(l);
+  applyI18n(t);
+  document.title = t.appName;
+  const first = (s) => { const n = String(s); return n.length >= 2 && "阿小老大".includes(n[0]) ? n[1] : n[0]; };
+  $("demoAvA").textContent = first(t.demoNameA);
+  $("demoAvB").textContent = first(t.demoNameB);
+  $("pview").replaceChildren();
+  showErr("cerr", ""); showErr("jerr", "");
+  updateCount();
+  renderThumbs();
+  updateTrans();
+  loadPresets();
+}
+langSwitch($("langs"), applyLang);
+
+// ---------- 內建遊戲 ----------
+async function loadPresets() {
+  try {
+    const r = await fetch(`/api/presets?lang=${lang}`);
+    presets = await r.json();
+    if (!Array.isArray(presets)) throw 0;
+    $("presetsMsg").textContent = "";
+  } catch { presets = []; $("presetsMsg").textContent = t.presetsFail; }
+  if (!presets.some((p) => p.id === preset)) preset = presets[0]?.id || "";
+  renderPresets();
+}
+function renderPresets() {
+  const box = $("presets"); box.replaceChildren();
+  for (const p of presets) {
+    const b = el("button", "preset" + (p.id === preset ? " on" : "")); b.type = "button";
+    const top = el("div", "pt"); top.append(el("b", null, p.title), el("span", "pn", fmt(t.playersN, { n: p.players })));
+    b.append(top, el("div", "ps", p.summary));
+    b.onclick = () => { preset = p.id; renderPresets(); };
+    box.append(b);
+  }
+}
+
+// ---------- 貼上文字與預覽 ----------
+function updateCount() { $("pcount").textContent = fmt(t.charCount, { n: $("ctext").value.length }); }
+$("ctext").addEventListener("input", () => { updateCount(); updateTrans(); });
 $("pbtn").onclick = async () => {
-  const r = await post("/api/preview", { text: $("ctext").value });
+  const r = await post("/api/preview", { text: $("ctext").value, lang });
   const d = await r.json();
   const box = $("pview"); box.replaceChildren();
-  if (!r.ok) { box.append(el("div", "err", d.message)); return; }
-  box.append(el("p", "muted small", `分成 ${d.count} 句，每一句都有固定編號。之後的裁定只能引用這些編號：`));
+  if (!r.ok) { box.append(el("div", "err", d.message || t.previewFail)); return; }
+  box.append(el("p", "muted small", fmt(t.previewHead, { n: d.count })));
   d.sentences.forEach((s) => { const row = el("div", "ev"); row.append(el("span", "cid", s.sid), el("span", null, s.text)); box.append(row); });
-  if (d.count > d.sentences.length) box.append(el("p", "muted small", `還有 ${d.count - d.sentences.length} 句`));
+  if (d.count > d.sentences.length) box.append(el("p", "muted small", fmt(t.previewMore, { n: d.count - d.sentences.length })));
 };
+
+// ---------- 預設翻譯：規則書語言跟介面不同時，建立房間前先翻譯 ----------
+const CHUNK = 3000;
+const tr = { on: true, busy: false, done: false, orig: "", err: "", busyText: "" };
+function chunksOf(text) {
+  const out = []; let buf = [], len = 0;
+  for (const line of text.split("\n")) {
+    if (line.length > CHUNK) { if (buf.length) { out.push(buf.join("\n")); buf = []; len = 0; } for (let i = 0; i < line.length; i += CHUNK) out.push(line.slice(i, i + CHUNK)); continue; }
+    if (len + line.length + 1 > CHUNK && buf.length) { out.push(buf.join("\n")); buf = []; len = 0; }
+    buf.push(line); len += line.length + 1;
+  }
+  if (buf.length) out.push(buf.join("\n"));
+  return out;
+}
+function needsTrans() {
+  const d = detectLang($("ctext").value);
+  return d && d !== lang ? d : null;
+}
+function updateTrans() {
+  const box = $("trans"); box.replaceChildren();
+  const detected = needsTrans();
+  box.hidden = !tr.busy && !tr.done && !detected;
+  if (box.hidden) return;
+  const target = t.langName[lang];
+  if (tr.busy) {
+    const p = el("div", "pending"); p.style.marginTop = "0"; p.append(el("span", "spin"), el("span", null, tr.busyText)); box.append(p);
+  } else if (tr.done) {
+    box.append(el("div", null, fmt(t.transDone, { lang: target })));
+    const row = el("div", "row"); row.append(el("span", "small grow", t.transNote));
+    const undo = el("button", "btn sm", t.transUndo); undo.type = "button";
+    undo.onclick = () => { $("ctext").value = tr.orig; tr.done = false; updateCount(); updateTrans(); };
+    row.append(undo); box.append(row);
+  } else {
+    box.append(el("div", null, fmt(t.transDetected, { lang: t.langName[detected] || t.langName.other })));
+    const row = el("div", "row");
+    const lbl = el("label"); const cb = el("input"); cb.type = "checkbox"; cb.checked = tr.on; cb.onchange = () => { tr.on = cb.checked; };
+    lbl.append(cb, el("span", null, fmt(t.transToggle, { lang: target })));
+    const go = el("button", "btn sm", t.transNow); go.type = "button"; go.onclick = () => translate();
+    row.append(lbl, el("span", "grow"), go); box.append(row);
+    if (tr.err) { const e = el("div", "err", tr.err); e.style.marginTop = "8px"; box.append(e); }
+  }
+}
+async function translate() {
+  if (tr.busy) return false;
+  const text = $("ctext").value, parts = chunksOf(text), out = [];
+  tr.busy = true; tr.err = ""; showErr("cerr", "");
+  $("create").disabled = true;
+  try {
+    for (let i = 0; i < parts.length; i++) {
+      tr.busyText = fmt(t.transBusy, { i: i + 1, n: parts.length }); updateTrans();
+      if (!parts[i].trim()) { out.push(parts[i]); continue; }
+      let r, d;
+      try { r = await post("/api/translate", { text: parts[i], to: lang, lang }); d = await r.json(); }
+      catch { r = { ok: false }; d = { message: t.netFail }; }
+      if (!r.ok) { tr.err = fmt(t.transFail, { err: d.message || t.errGeneric }); return false; }
+      out.push(d.text);
+    }
+    tr.orig = text; tr.done = true;
+    $("ctext").value = out.join("\n"); $("pview").replaceChildren(); updateCount();
+    return true;
+  } finally {
+    tr.busy = false; $("create").disabled = false; updateTrans();
+  }
+}
 
 // ---------- 拍照上傳 ----------
 const MAX_PAGES = 8;
@@ -160,8 +275,7 @@ let ocrRunning = false;
 $("photoIn").addEventListener("change", (e) => {
   const files = [...e.target.files].filter((f) => f.type.startsWith("image/"));
   const room = MAX_PAGES - photos.length;
-  if (files.length > room) $("ocrMsg").textContent = `最多 ${MAX_PAGES} 頁，多出的 ${files.length - room} 張沒有加入。`;
-  else $("ocrMsg").textContent = "";
+  $("ocrMsg").textContent = files.length > room ? fmt(t.ocrMax, { n: MAX_PAGES }) : "";
   files.slice(0, room).forEach((file) => photos.push({ file, url: URL.createObjectURL(file), status: "idle" }));
   e.target.value = "";
   renderThumbs();
@@ -170,23 +284,23 @@ $("photoIn").addEventListener("change", (e) => {
 function renderThumbs() {
   const box = $("thumbs"); box.replaceChildren();
   photos.forEach((p, i) => {
-    const t = el("div", "thumb" + (p.status === "ok" ? " ok" : p.status === "fail" ? " fail" : p.status === "busy" ? " busy" : ""));
-    const img = el("img"); img.src = p.url; img.alt = `第 ${i + 1} 頁`;
-    t.append(img, el("span", "pg", String(i + 1)));
+    const th = el("div", "thumb" + (p.status === "ok" ? " ok" : p.status === "fail" ? " fail" : p.status === "busy" ? " busy" : ""));
+    const img = el("img"); img.src = p.url; img.alt = String(i + 1);
+    th.append(img, el("span", "pg", String(i + 1)));
     if (!ocrRunning) {
-      const x = el("button", "x", "×"); x.type = "button"; x.setAttribute("aria-label", `移除第 ${i + 1} 頁`);
+      const x = el("button", "x", "×"); x.type = "button"; x.setAttribute("aria-label", `${t.del} ${i + 1}`);
       x.onclick = () => { URL.revokeObjectURL(p.url); photos.splice(i, 1); renderThumbs(); };
-      t.append(x);
+      th.append(x);
     }
-    if (p.status === "busy") t.append(el("span", "st", "辨識中"));
-    if (p.status === "ok") t.append(el("span", "st", "完成"));
-    if (p.status === "fail") t.append(el("span", "st", "失敗"));
-    box.append(t);
+    if (p.status === "busy") th.append(el("span", "st", t.thumbBusy));
+    if (p.status === "ok") th.append(el("span", "st", t.thumbOk));
+    if (p.status === "fail") th.append(el("span", "st", t.thumbFail));
+    box.append(th);
   });
   const todo = photos.filter((p) => p.status !== "ok").length;
   $("ocrBtn").hidden = !todo;
   $("ocrBtn").disabled = ocrRunning;
-  $("ocrBtn").textContent = ocrRunning ? "辨識中⋯" : photos.some((p) => p.status === "fail") ? `重新辨識 ${todo} 頁` : `辨識 ${todo} 頁文字`;
+  $("ocrBtn").textContent = ocrRunning ? t.ocrBtnBusy : photos.some((p) => p.status === "fail") ? fmt(t.ocrBtnRetry, { n: todo }) : fmt(t.ocrBtn, { n: todo });
 }
 
 // 縮小照片再上傳：最長邊 2000px，JPEG
@@ -208,14 +322,13 @@ $("ocrBtn").onclick = async () => {
   for (const p of photos) {
     if (p.status === "ok") continue;
     p.status = "busy"; renderThumbs();
-    const n = photos.indexOf(p) + 1;
-    $("ocrMsg").textContent = `正在辨識第 ${n} 頁（每頁約 10–30 秒）`;
+    $("ocrMsg").textContent = fmt(t.ocrProgress, { n: photos.indexOf(p) + 1 });
     try {
-      const r = await post("/api/ocr", { image: await compress(p.file) });
+      const r = await post("/api/ocr", { image: await compress(p.file), lang });
       const d = await r.json();
       if (r.ok) { p.status = "ok"; p.text = d.text; p.err = null; }
-      else { p.status = "fail"; p.err = d.message || "辨識失敗"; if (r.status === 429 || d.error === "no_key" || d.error === "no_vision") { ocrRunning = false; break; } }
-    } catch { p.status = "fail"; p.err = "網路連線失敗"; }
+      else { p.status = "fail"; p.err = d.message || t.ocrFailGeneric; if (r.status === 429 || d.error === "no_key" || d.error === "no_vision") { ocrRunning = false; break; } }
+    } catch { p.status = "fail"; p.err = t.netFail; }
     renderThumbs();
   }
   ocrRunning = false;
@@ -223,51 +336,65 @@ $("ocrBtn").onclick = async () => {
   const failed = photos.filter((p) => p.status === "fail");
   if (done.length) {
     $("ctext").value = done.map((p) => p.text).join("\n");
+    tr.done = false;
     updateCount();
     $("pasteBox").hidden = false;
   }
   const unclear = ($("ctext").value.match(/〔看不清〕/g) || []).length;
   $("ocrMsg").textContent = failed.length
-    ? `第 ${failed.map((p) => photos.indexOf(p) + 1).join("、")} 頁沒有辨識成功：${failed[0].err}`
-    : done.length ? `${done.length} 頁都辨識好了${unclear ? `，有 ${unclear} 處看不清，請在下面補上` : ""}。` : "";
+    ? fmt(t.ocrFailPages, { pages: failed.map((p) => photos.indexOf(p) + 1).join(t.listSep), err: failed[0].err })
+    : done.length ? fmt(t.ocrDone, { n: done.length, extra: unclear ? fmt(t.ocrUnclear, { n: unclear }) : "" }) : "";
   renderThumbs();
+  updateTrans();
+  // 預設翻譯：辨識完就直接翻
+  if (done.length && needsTrans() && tr.on) translate();
 };
 
 // ---------- 建立與加入 ----------
 $("create").onclick = async () => {
   const n = $("cname").value.trim();
-  if (!n) return showErr("cerr", "請先填暱稱");
-  if (src !== "sample") {
+  if (!n) return showErr("cerr", t.errName);
+  const body = { device: deviceId(), name: n, color: color(), lang };
+  if (src === "preset") {
+    if (!preset) return showErr("cerr", t.errPickPreset);
+    body.preset = preset;
+  } else {
     const text = $("ctext").value;
-    if (!text.trim()) return showErr("cerr", src === "photo" ? "請先拍照並辨識文字" : "請先貼上規則文字");
-    const unclear = (text.match(/〔看不清〕/g) || []).length;
-    if (unclear) return showErr("cerr", `還有 ${unclear} 處〔看不清〕，請對照照片補上或刪掉`);
+    if (!text.trim()) return showErr("cerr", src === "photo" ? t.errNeedPhoto : t.errNeedPaste);
+    if (needsTrans() && tr.on && !tr.done) {
+      if (await translate()) showErr("cerr", t.transReview);
+      return;
+    }
+    const unclear = ($("ctext").value.match(/〔看不清〕/g) || []).length;
+    if (unclear) return showErr("cerr", fmt(t.errUnclear, { n: unclear }));
+    body.title = $("ctitle").value;
+    body.rulebook = $("ctext").value;
   }
   store("name", n);
-  const body = { device: deviceId(), name: n, color: color(), useSample: src === "sample", title: $("ctitle").value, rulebook: $("ctext").value };
-  $("create").disabled = true; $("create").textContent = "建立中⋯";
+  $("create").disabled = true; $("create").textContent = t.creating;
   try {
     const r = await post("/api/rooms", body);
     const d = await r.json();
-    if (!r.ok) return showErr("cerr", d.message || "建立失敗");
+    if (!r.ok) return showErr("cerr", d.message || t.errCreate);
     location.href = `/room.html?c=${d.code}`;
-  } catch { showErr("cerr", "網路連線失敗，請再試一次"); }
-  finally { $("create").disabled = false; $("create").textContent = "建立房間"; }
+  } catch { showErr("cerr", t.netFail); }
+  finally { $("create").disabled = false; $("create").textContent = t.createBtn; }
 };
 
 $("join").onclick = async () => {
   const code = $("jcode").value.trim().toUpperCase();
   const n = $("jname").value.trim();
-  if (!/^[A-Z0-9]{6}$/.test(code)) return showErr("jerr", "房號是 6 個字元");
-  if (!n) return showErr("jerr", "請先填暱稱");
+  if (!/^[A-Z0-9]{6}$/.test(code)) return showErr("jerr", t.errCode);
+  if (!n) return showErr("jerr", t.errName);
   store("name", n);
-  const r = await fetch(`/api/rooms/${code}`);
-  if (!r.ok) return showErr("jerr", "找不到這個房間，可能打錯或已經過期");
+  const r = await fetch(`/api/rooms/${code}?lang=${lang}`);
+  if (!r.ok) return showErr("jerr", t.errNoRoom);
   location.href = `/room.html?c=${code}&role=${role}`;
 };
 
 const q = new URLSearchParams(location.search).get("c");
 if (q) { $("jcode").value = q.toUpperCase(); showDoor("join"); }
+applyLang(lang);
 </script>
 </body>
 </html>

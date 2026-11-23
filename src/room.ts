@@ -4,6 +4,7 @@ import { RoomCore, newRoom, type RoomState, type Deps } from "./room-core";
 import { arbitrate, generateGraph } from "./ai";
 import type { AppEnv } from "./env";
 import type { Sentence } from "./split";
+import { tr, normLang } from "./i18n";
 
 const TTL = 48 * 3600 * 1000; // 最後一次活動 48 小時後刪除
 
@@ -19,7 +20,7 @@ export class RoomDO extends DurableObject<AppEnv> {
     });
   }
 
-  private deps(): Deps {
+  private deps(lang?: string): Deps {
     return {
       now: () => Date.now(),
       randInt: (n) => {
@@ -27,20 +28,22 @@ export class RoomDO extends DurableObject<AppEnv> {
         crypto.getRandomValues(a);
         return a[0] % n;
       },
-      arbitrate: (input, sentences) => arbitrate(input, sentences, this.env),
-      generateGraph: (sentences) => generateGraph(sentences, this.env),
+      arbitrate: (input, sentences) => arbitrate(input, sentences, this.env, normLang(this.s?.lang)),
+      generateGraph: (sentences) => generateGraph(sentences, this.env, normLang(this.s?.lang)),
       quota: async (key) => {
         const stub = this.env.USAGE.get(this.env.USAGE.idFromName("global"));
         const r = await stub.take(`dev:${key}`, 6, Number(this.env.DAILY_LIMIT ?? 2000));
         if (r.ok) return { ok: true };
-        return { ok: false, message: r.reason === "daily" ? "今天的試用額度用完了" : `太快了，請 ${r.retryAfter} 秒後再試` };
+        const t = tr(lang ?? this.s?.lang);
+        return { ok: false, message: r.reason === "daily" ? t.quotaDaily : t.tooFast(r.retryAfter) };
       },
       commit: () => this.commit(),
     };
   }
 
-  private core() {
-    return new RoomCore(this.s!, this.deps());
+  // lang：這次操作者的介面語言（錯誤訊息用）；沒給就用房間語言
+  private core(lang?: string) {
+    return new RoomCore(this.s!, this.deps(lang), lang);
   }
 
   private online(): Set<string> {
@@ -88,10 +91,10 @@ export class RoomDO extends DurableObject<AppEnv> {
   // ---- 給 Worker 呼叫的 RPC ----
   async info() {
     if (!this.s) return { exists: false as const };
-    return { exists: true as const, title: this.s.title, players: Object.keys(this.s.players).length };
+    return { exists: true as const, title: this.s.title, lang: normLang(this.s.lang), players: Object.keys(this.s.players).length };
   }
 
-  async init(args: { code: string; title: string; host: string; hostName: string; hostColor: string; sentences: Sentence[] }) {
+  async init(args: { code: string; title: string; host: string; hostName: string; hostColor: string; sentences: Sentence[]; lang?: string }) {
     if (this.s) return { ok: false };
     this.s = newRoom({ ...args, now: Date.now() });
     const { sentences, disputes, ...rest } = this.s;
@@ -107,7 +110,8 @@ export class RoomDO extends DurableObject<AppEnv> {
     const url = new URL(req.url);
     const device = url.searchParams.get("device") ?? "";
     if (!/^[A-Za-z0-9-]{8,64}$/.test(device)) return new Response("裝置識別碼不正確", { status: 400 });
-    const err = this.core().join(device, {
+    const lang = url.searchParams.get("lang") || undefined;
+    const err = this.core(lang).join(device, {
       name: url.searchParams.get("name") ?? "",
       color: url.searchParams.get("color") ?? "",
       role: url.searchParams.get("role") ?? "player",
@@ -117,7 +121,7 @@ export class RoomDO extends DurableObject<AppEnv> {
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
     this.ctx.acceptWebSocket(server);
-    server.serializeAttachment({ device });
+    server.serializeAttachment({ device, lang });
     await this.commit();
     return new Response(null, { status: 101, webSocket: client });
   }
@@ -127,16 +131,16 @@ export class RoomDO extends DurableObject<AppEnv> {
       try { ws.send(JSON.stringify({ type: "closed" })); ws.close(1000, "room closed"); } catch {}
       return;
     }
-    const att = ws.deserializeAttachment() as { device?: string } | null;
+    const att = ws.deserializeAttachment() as { device?: string; lang?: string } | null;
     if (!att?.device || typeof raw !== "string" || raw.length > 12000) return;
     let msg: any;
     try { msg = JSON.parse(raw); } catch { return; }
     try {
-      const r = await this.core().handle(att.device, msg, this.online());
+      const r = await this.core(att.lang).handle(att.device, msg, this.online());
       if (r.reply) ws.send(JSON.stringify(r.reply));
       if (r.error) ws.send(JSON.stringify({ type: "error", message: r.error }));
     } catch (e) {
-      try { ws.send(JSON.stringify({ type: "error", message: "伺服器發生錯誤，請再試一次" })); } catch {}
+      try { ws.send(JSON.stringify({ type: "error", message: tr(att.lang ?? this.s?.lang).serverError })); } catch {}
     }
   }
 

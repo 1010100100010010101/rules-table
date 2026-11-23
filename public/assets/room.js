@@ -1,21 +1,25 @@
 import { $, el, avatar, toast, quoteRows, renderVerdict, store, deviceId, copyText, wireCounter, COLORS } from "/assets/common.js";
+import { dict, fmt, getLang, applyI18n, langSwitch } from "/assets/i18n.js";
 
 const params = new URLSearchParams(location.search);
 const code = (params.get("c") || "").toUpperCase();
 const device = deviceId();
 const privKey = `priv:${code}`;
 const setupKey = `setup:${code}`;
+let lang = getLang();
+let t = dict(lang);
 // 骰面點數在 3×3 格子裡的位置
 const PIPS = { 1: [4], 2: [2, 6], 3: [2, 4, 6], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
 let lastRollKey = null;
 function die(v, roll) {
   const d = el("span", "die" + (v === 1 ? " one" : "") + (roll ? " roll" : ""));
-  d.setAttribute("role", "img"); d.setAttribute("aria-label", `${v} 點`);
+  d.setAttribute("role", "img"); d.setAttribute("aria-label", String(v));
   for (let i = 0; i < 9; i++) d.append(el("i", PIPS[v].includes(i) ? "p" : null));
   return d;
 }
 
 let S = null;            // 伺服器送來的最新房間狀態
+let info = null;         // 加入前查到的房間資訊
 let ws = null;
 let closedByServer = false;
 let retry = 0;
@@ -46,27 +50,47 @@ function quotesOf(ids) {
 }
 function send(obj) {
   if (ws && ws.readyState === WebSocket.OPEN) { ws.send(JSON.stringify(obj)); return true; }
-  toast("連線中斷，正在重新連線⋯");
+  toast(t.reconnecting);
   return false;
 }
 function setConn(on) { $("conn").classList.toggle("off", !on); }
 
-function fatal(msg) {
+let fatalMsg = null;
+function fatal(key) {
+  fatalMsg = key;
   const f = $("fatal");
-  f.replaceChildren(el("h2", null, "沒辦法進入房間"), el("p", "muted", msg));
-  const a = el("a", "btn", "回首頁"); a.href = "/"; f.append(a);
+  f.replaceChildren(el("h2", null, t.fatalTitle), el("p", "muted", t[key] || key));
+  const a = el("a", "btn", t.goHome); a.href = "/"; f.append(a);
   f.hidden = false;
   $("tabs").hidden = true;
   $("joinCard").hidden = true;
-  document.querySelectorAll("[id^=tab-]").forEach((t) => (t.hidden = true));
+  document.querySelectorAll("[id^=tab-]").forEach((x) => (x.hidden = true));
 }
 
+// ---------- 語言 ----------
+function applyLang(l) {
+  lang = l;
+  t = dict(l);
+  applyI18n(t);
+  if (S || info) $("title").textContent = S?.title || info.title; // 標題是遊戲名稱，不跟著換語言
+  $("codeChip").title = t.copyInvite;
+  [...$("dseg").children].forEach((b) => (b.textContent = fmt(t.diceN, { n: b.dataset.n })));
+  if (info && !S) $("joinInfo").textContent = fmt(t.joinInfo, { title: info.title, n: info.players });
+  if (fatalMsg) fatal(fatalMsg);
+  renderAll();
+}
+langSwitch($("langs"), (l) => {
+  applyLang(l);
+  // 重新連線，讓伺服器的錯誤訊息也換成新語言
+  if (ws && ws.readyState === WebSocket.OPEN) ws.close();
+});
+
 // ---------- 分頁 ----------
-function switchTab(t) {
-  tab = t;
-  store(`tab:${code}`, t);
-  document.querySelectorAll("[id^=tab-]").forEach((x) => (x.hidden = x.id !== `tab-${t}`));
-  [...$("tabs").querySelectorAll("button")].forEach((b) => b.classList.toggle("on", b.dataset.t === t));
+function switchTab(x) {
+  tab = x;
+  store(`tab:${code}`, x);
+  document.querySelectorAll("[id^=tab-]").forEach((e) => (e.hidden = e.id !== `tab-${x}`));
+  [...$("tabs").querySelectorAll("button")].forEach((b) => b.classList.toggle("on", b.dataset.t === x));
   window.scrollTo({ top: 0 });
 }
 $("tabs").addEventListener("click", (e) => {
@@ -77,7 +101,7 @@ $("tabs").addEventListener("click", (e) => {
 // ---------- 連線 ----------
 function connect() {
   const proto = location.protocol === "https:" ? "wss" : "ws";
-  const q = new URLSearchParams({ device, name: store("name") || "", color: myColor(), role: joinRole });
+  const q = new URLSearchParams({ device, name: store("name") || "", color: myColor(), role: joinRole, lang });
   ws = new WebSocket(`${proto}://${location.host}/api/rooms/${code}/ws?${q}`);
   ws.onopen = () => { retry = 0; setConn(true); ws.send(JSON.stringify({ type: "sync" })); };
   ws.onmessage = (e) => {
@@ -87,9 +111,9 @@ function connect() {
   };
   ws.onclose = () => {
     setConn(false);
-    if (pendingPriv) { pendingPriv = null; renderChat(); toast("連線中斷，私下問的那一題請再送一次"); }
+    if (pendingPriv) { pendingPriv = null; renderChat(); toast(t.privLost); }
     if (closedByServer) return;
-    if (!S && retry >= 2) { fatal("無法連線到房間。房間可能已過期，或已滿（最多 12 人）。"); return; }
+    if (!S && retry >= 2) { fatal("cantConnect"); return; }
     const wait = Math.min(10000, 800 * 2 ** retry);
     retry++;
     setTimeout(connect, wait);
@@ -101,7 +125,7 @@ function onMessage(m) {
   else if (m.type === "private_result") onPrivate(m);
   else if (m.type === "error") toast(m.message);
   else if (m.type === "toast") toast(m.message);
-  else if (m.type === "closed") { closedByServer = true; fatal("房主已結束這個房間，或房間已過期。"); }
+  else if (m.type === "closed") { closedByServer = true; fatal("roomEnded"); }
 }
 
 // ---------- 全部重畫 ----------
@@ -110,7 +134,7 @@ function renderAll() {
   $("joinCard").hidden = true;
   $("tabs").hidden = false;
   $("title").textContent = S.title;
-  document.title = `${S.title}｜規則仲裁桌`;
+  document.title = fmt(t.tabRoomTitle, { title: S.title });
   if (document.querySelector("[id^=tab-]:not([hidden])") === null) switchTab(tab);
   renderHeader();
   renderRuleTab();
@@ -126,7 +150,8 @@ function renderHeader() {
   const ps = [...S.players].sort((a, b) => Number(b.online) - Number(a.online));
   for (const p of ps) {
     const a = avatar(p.name, p.color, { off: !p.online, dot: p.online });
-    a.title = `${p.name}${p.isHost ? "（房主）" : ""}${p.role === "viewer" ? "（只看）" : ""}${p.device === device ? "（你）" : ""}`;
+    const tags = [p.isHost && t.host, p.role === "viewer" && t.roleViewer].filter(Boolean);
+    a.title = p.name + (tags.length ? ` (${tags.join(", ")})` : "") + (p.device === device ? t.you : "");
     box.append(a);
   }
 }
@@ -155,8 +180,8 @@ $("send").onclick = () => {
   const body = mode === "duel"
     ? { type: "dispute", mode, a: $("a").value.trim(), b: $("b").value.trim() }
     : { type: "dispute", mode, q: $("q").value.trim() };
-  if (mode === "duel" && (!body.a || !body.b)) return toast("兩方的主張都要填");
-  if (mode === "ask" && !body.q) return toast("問題不能空白");
+  if (mode === "duel" && (!body.a || !body.b)) return toast(t.needBothClaims);
+  if (mode === "ask" && !body.q) return toast(t.needQuestion);
   if (send(body)) {
     for (const id of ["a", "b", "q"]) { $(id).value = ""; $(id).dispatchEvent(new Event("input")); }
   }
@@ -167,11 +192,10 @@ function renderRuleTab() {
   $("viewerNote").hidden = isPlayer();
   const play = S.guide.play;
   $("ctxNote").hidden = !(play && !play.done);
-  $("ctxNote").textContent = "第一回合進行中：目前的步驟會一起交給 AI，讓它知道你們卡在哪裡。";
 
   const box = $("disputes"); box.replaceChildren();
   if (!S.disputes.length) {
-    box.append(el("p", "muted", "還沒有爭議。兩方各寫一句主張，或直接問一個規則問題。"));
+    box.append(el("p", "muted", t.noDisputes));
     return;
   }
   for (const d of S.disputes) box.append(disputeCard(d));
@@ -181,27 +205,25 @@ function disputeCard(d) {
   const c = el("section", "card");
   const head = el("div", "dispute-head");
   head.append(avatar(d.byName, d.byColor));
-  const hb = el("div", "grow");
-  hb.append(el("div", null, `${d.byName}${d.mode === "duel" ? " 提出爭議" : " 提問"}`));
-  head.append(hb);
+  head.append(el("div", "grow", fmt(d.mode === "duel" ? t.raisedDispute : t.askedQuestion, { name: d.byName })));
   c.append(head);
 
   const cl = el("div", "claims");
   const line = (label, text) => { const x = el("div"); x.append(el("b", null, label), document.createTextNode(text)); return x; };
-  if (d.mode === "duel") cl.append(line("A：", d.a), line("B：", d.b));
-  else cl.append(line("問：", d.q));
+  if (d.mode === "duel") cl.append(line(t.claimLabelA, d.a), line(t.claimLabelB, d.b));
+  else cl.append(line(t.claimLabelQ, d.q));
   c.append(cl);
 
   if (d.status === "pending") {
     const p = el("div", "pending");
-    p.append(el("span", "spin"), el("span", null, "裁定中⋯ 全桌都會看到結果"));
+    p.append(el("span", "spin"), el("span", null, t.pendingRuling));
     c.append(p);
     return c;
   }
   if (d.status === "error") {
-    const e = el("div", "err", d.error || "裁定失敗"); e.style.marginTop = "8px"; c.append(e);
+    const e = el("div", "err", d.error || t.rulingFailed); e.style.marginTop = "8px"; c.append(e);
     if (isPlayer()) {
-      const b = el("button", "btn sm", "再試一次"); b.style.marginTop = "8px";
+      const b = el("button", "btn sm", t.retry); b.style.marginTop = "8px";
       b.onclick = () => send({ type: "dispute", mode: d.mode, a: d.a, b: d.b, q: d.q });
       c.append(b);
     }
@@ -210,7 +232,7 @@ function disputeCard(d) {
   const r = d.result;
   c.classList.add("verdict"); c.dataset.kind = r.kind;
   const body = el("div"); body.style.marginTop = "10px";
-  renderVerdict(body, r, d.mode);
+  renderVerdict(body, r, d.mode, {}, t);
   c.append(body);
 
   if (["explicit", "inferred"].includes(r.kind)) c.append(ackRow(d));
@@ -224,24 +246,24 @@ function ackRow(d) {
   const box = el("div"); box.style.marginTop = "10px";
   if (r.kind === "inferred") {
     const passed = a.agree * 2 > a.eligible;
-    box.append(el("div", passed ? "ck y" : "muted small", passed ? "✓ 全桌過半同意，已生效" : `同意 ${a.agree} / ${a.eligible} 人，過半才生效`));
+    box.append(el("div", passed ? "ck y" : "muted small", passed ? t.ackPassed : fmt(t.ackProgress, { a: a.agree, e: a.eligible })));
     const bar = el("div", "bar"); const i = el("i"); i.style.width = `${Math.min(100, (a.agree / a.eligible) * 100)}%`; bar.append(i); box.append(bar);
     if (isPlayer()) {
       const row = el("div", "row"); row.style.marginTop = "8px";
-      const y = el("button", "btn sm" + (a.mine === true ? " on" : ""), "同意");
+      const y = el("button", "btn sm" + (a.mine === true ? " on" : ""), t.agree);
       y.onclick = () => send({ type: "ack", id: d.id, agree: true });
-      const n = el("button", "btn sm" + (a.mine === false ? " on" : ""), "不同意");
+      const n = el("button", "btn sm" + (a.mine === false ? " on" : ""), t.disagree);
       n.onclick = () => send({ type: "ack", id: d.id, agree: false });
       row.append(y, n); box.append(row);
     }
   } else if (a.disagree * 2 > a.eligible) {
-    box.append(el("div", "warnbox small", "全桌多數不同意這次裁定，所以這次不算。可以在下面投票，定成這一桌的房規。"));
+    box.append(el("div", "warnbox small", t.rejectedNote));
   } else if (isPlayer()) {
     const row = el("div", "row");
-    const n = el("button", "btn sm" + (a.mine === false ? " on" : ""), a.mine === false ? "已表示不同意（再按收回）" : "不同意這個裁定");
+    const n = el("button", "btn sm" + (a.mine === false ? " on" : ""), a.mine === false ? t.disagreed : t.disagreeBtn);
     n.onclick = () => send({ type: "ack", id: d.id, agree: a.mine === false });
     row.append(n);
-    if (a.disagree) row.append(el("span", "muted small", `${a.disagree} 人不同意；過半不同意就不算`));
+    if (a.disagree) row.append(el("span", "muted small", fmt(t.disagreeCount, { n: a.disagree })));
     box.append(row);
   }
   return box;
@@ -250,18 +272,18 @@ function ackRow(d) {
 function proposeBox(d) {
   const box = el("div", "vote");
   const opts = d.result.house_rule_options || [];
-  box.append(el("div", "subh", d.result.kind === "conflict" ? "兩種讀法，全桌投票選一種（AI 建議，不是規則）" : "可以定成這一桌的房規（AI 建議，不是規則）"));
+  box.append(el("div", "subh", d.result.kind === "conflict" ? t.proposeConflict : t.proposeGap));
   for (const o of opts) {
     const r = el("div", "opt");
-    r.append(el("p", null, o.text), el("small", null, "影響：" + (o.effect || "")));
+    r.append(el("p", null, o.text), el("small", null, fmt(t.effect, { e: o.effect || "" })));
     box.append(r);
   }
   if (isPlayer()) {
-    const inp = el("input"); inp.type = "text"; inp.maxLength = 120; inp.placeholder = "也可以自己寫一個（選填）";
+    const inp = el("input"); inp.type = "text"; inp.maxLength = 120; inp.placeholder = t.customPh;
     inp.value = drafts[d.id] || ""; inp.oninput = () => (drafts[d.id] = inp.value); inp.style.marginTop = "8px";
-    const b = el("button", "btn acc block", "發起房規投票"); b.style.marginTop = "8px";
+    const b = el("button", "btn acc block", t.startVote); b.style.marginTop = "8px";
     b.onclick = () => {
-      if (!opts.length && !inp.value.trim()) return toast("請先寫一個房規內容");
+      if (!opts.length && !inp.value.trim()) return toast(t.needRuleText);
       if (send({ type: "vote_open", disputeId: d.id, custom: inp.value })) drafts[d.id] = "";
     };
     box.append(inp, b);
@@ -273,26 +295,26 @@ function voteBox(v, showTitle) {
   const box = el("div", "vote");
   const open = v.status === "open";
   if (showTitle) box.append(el("div", null, v.title));
-  box.append(el("div", "subh", open ? `房規投票中．已投 ${v.voted} / ${v.eligible} 人（開票前看不到別人投什麼）` : "投票結果"));
-  v.options.forEach((t, i) => {
+  box.append(el("div", "subh", open ? fmt(t.voteHeadOpen, { v: v.voted, e: v.eligible }) : t.voteHeadClosed));
+  v.options.forEach((text, i) => {
     const b = el("button", "vopt" + (v.mine === i ? " mine" : "") + (!open && v.winner === i ? " win" : ""));
     b.type = "button";
-    b.append(el("span", "grow", t));
-    if (!open && v.tally) b.append(el("span", "tally", `${v.tally[i]} 票`));
-    else if (v.mine === i) b.append(el("span", "tally", "你的選擇"));
+    b.append(el("span", "grow", text));
+    if (!open && v.tally) b.append(el("span", "tally", fmt(t.voteTally, { n: v.tally[i] })));
+    else if (v.mine === i) b.append(el("span", "tally", t.voteMine));
     b.disabled = !open || !v.canVote;
     b.onclick = () => send({ type: "vote_cast", voteId: v.id, choice: i });
     box.append(b);
   });
-  if (open && !v.canVote) box.append(el("p", "muted small", "你在投票開始後才加入，這一票不能投。"));
+  if (open && !v.canVote) box.append(el("p", "muted small", t.voteLate));
   if (open && (isHost() || v.byMe)) {
-    const c = el("button", "btn sm", "提前開票"); c.style.marginTop = "8px";
+    const c = el("button", "btn sm", t.voteCloseEarly); c.style.marginTop = "8px";
     c.onclick = () => send({ type: "vote_close", voteId: v.id });
     box.append(c);
   }
   if (!open) {
-    const msg = v.ruleId ? `✓ 通過，已寫入房規 ${v.ruleId}` : v.winner === v.reject ? "多數選擇維持現狀，沒有新增房規" : "平手或沒人投票，沒有新增房規";
-    const p = el("p", v.ruleId ? "ck y" : "muted small", msg); box.append(p);
+    const msg = v.ruleId ? fmt(t.votePassed, { id: v.ruleId }) : v.winner === v.reject ? t.voteKept : t.voteTie;
+    box.append(el("p", v.ruleId ? "ck y" : "muted small", msg));
   }
   return box;
 }
@@ -300,20 +322,20 @@ function voteBox(v, showTitle) {
 // ---------- 私下問 ----------
 function renderChat() {
   const box = $("chat"); box.replaceChildren();
-  if (!chat.length && !pendingPriv) box.append(el("p", "muted", "例如：「停在別人的攤位但錢不夠怎麼辦？」不會打擾其他人。"));
+  if (!chat.length && !pendingPriv) box.append(el("p", "muted", t.privEmpty));
   for (const x of chat) {
     if (x.role === "me") { box.append(el("div", "bub me", x.q)); continue; }
     const b = el("div", "bub bot");
-    if (x.error) { b.append(el("div", "err", x.error)); box.append(b); continue; }
-    b.append(el("span", "priv", "私下參考，不是全桌裁定"));
+    if (x.error || !x.data) { b.append(el("div", "err", x.error || t.noAnswer)); box.append(b); continue; }
+    b.append(el("span", "priv", t.privBadge));
     const inner = el("div"); inner.style.marginTop = "6px";
-    renderVerdict(inner, x.data, "ask", { hideChecks: true, source: false });
+    renderVerdict(inner, x.data, "ask", { hideChecks: true, source: false }, t);
     b.append(inner);
     if (isPlayer()) {
       const row = el("div", "row"); row.style.marginTop = "8px";
-      const pub = el("button", "btn sm", "公開給全桌");
-      pub.onclick = () => { if (send({ type: "dispute", mode: "ask", q: x.q })) { switchTab("rule"); toast("已送到全桌，等待裁定"); } };
-      const dis = el("button", "btn sm warn", "這裡有爭議");
+      const pub = el("button", "btn sm", t.publish);
+      pub.onclick = () => { if (send({ type: "dispute", mode: "ask", q: x.q })) { switchTab("rule"); toast(t.published); } };
+      const dis = el("button", "btn sm warn", t.thisDisputed);
       dis.onclick = () => { setMode("ask"); $("q").value = x.q; $("q").dispatchEvent(new Event("input")); switchTab("rule"); $("q").focus(); };
       row.append(pub, dis); b.append(row);
     }
@@ -321,14 +343,14 @@ function renderChat() {
   }
   if (pendingPriv) {
     box.append(el("div", "bub me", pendingPriv.q));
-    const p = el("div", "bub bot"); const r = el("div", "pending"); r.append(el("span", "spin"), el("span", null, "思考中⋯")); p.append(r); box.append(p);
+    const p = el("div", "bub bot"); const r = el("div", "pending"); r.append(el("span", "spin"), el("span", null, t.thinking)); p.append(r); box.append(p);
   }
 }
 
 $("psend").onclick = () => {
   const q = $("pq").value.trim();
   if (!q) return;
-  if (pendingPriv) return toast("上一題還在回答中");
+  if (pendingPriv) return toast(t.privBusy);
   const id = Date.now();
   const history = chat.filter((x) => x.role === "bot" && x.data).slice(-6).map((x) => ({ q: x.q, a: x.data.result }));
   if (!send({ type: "private", id, q, history })) return;
@@ -353,20 +375,20 @@ function renderGuide() {
   const g = S.guide, box = $("guide"); box.replaceChildren();
   if (g.generating) {
     const c = el("section", "card"); const p = el("div", "pending");
-    p.append(el("span", "spin"), el("span", null, "AI 正在讀規則書，整理回合地圖⋯（約 30–90 秒）"));
-    c.append(el("h3", null, "回合地圖"), p); box.append(c);
+    p.append(el("span", "spin"), el("span", null, t.graphGenerating));
+    c.append(el("h3", null, t.turnMap), p); box.append(c);
     return;
   }
   if (!g.graph) {
     const c = el("section", "card");
-    c.append(el("h3", null, "讀完規則還是不懂怎麼玩？"));
-    c.append(el("p", "muted", "AI 會把規則書整理成「輪到你時依序做什麼」的回合地圖，每一步都附規則原句。房主確認後，可以用第一回合模式一步一步帶大家玩。"));
+    c.append(el("h3", null, t.guideIntroTitle));
+    c.append(el("p", "muted", t.guideIntro));
     if (g.error) c.append(el("div", "err", g.error));
     if (isHost()) {
-      const b = el("button", "btn pri block", "產生回合地圖"); b.style.marginTop = "10px";
+      const b = el("button", "btn pri block", t.genGraph); b.style.marginTop = "10px";
       b.onclick = () => send({ type: "guide_generate" });
       c.append(b);
-    } else c.append(el("p", "muted", "等房主產生回合地圖。"));
+    } else c.append(el("p", "muted", t.waitHostGraph));
     box.append(c);
     return;
   }
@@ -374,26 +396,26 @@ function renderGuide() {
 
   const ctl = el("section", "card");
   if (!g.confirmed) {
-    ctl.append(el("h3", null, "回合地圖草稿"));
-    ctl.append(el("div", "warnbox small", "這是 AI 整理的草稿，房主確認後才能開始第一回合。虛線框是規則書沒寫清楚、AI 推論的步驟。"));
+    ctl.append(el("h3", null, t.draftTitle));
+    ctl.append(el("div", "warnbox small", t.draftNote));
     if (isHost()) {
       const row = el("div", "row"); row.style.marginTop = "10px";
-      const ok = el("button", "btn pri", "確認回合地圖"); ok.onclick = () => send({ type: "guide_confirm" });
-      const re = el("button", "btn", "重新產生"); re.onclick = () => send({ type: "guide_generate" });
+      const ok = el("button", "btn pri", t.confirmGraph); ok.onclick = () => send({ type: "guide_confirm" });
+      const re = el("button", "btn", t.regenerate); re.onclick = () => send({ type: "guide_generate" });
       row.append(ok, re); ctl.append(row);
     }
   } else if (!g.play) {
-    ctl.append(el("h3", null, "第一回合模式"));
-    ctl.append(el("p", "muted", "從擺桌面開始，一步一步帶每位玩家走完一輪。擲骰點數會自動選好下一步。玩家順序在「工具」分頁調整。"));
+    ctl.append(el("h3", null, t.firstRoundTitle));
+    ctl.append(el("p", "muted", t.firstRoundIntro));
     const strip = el("div", "avs"); S.seats.forEach((s) => strip.append(avatar(s.name, s.color))); ctl.append(strip);
     if (isHost()) {
       const row = el("div", "row"); row.style.marginTop = "10px";
-      const st = el("button", "btn pri", "開始第一回合"); st.onclick = () => send({ type: "guide_start" });
-      const re = el("button", "btn sm", "重新產生地圖"); re.onclick = () => send({ type: "guide_generate" });
+      const st = el("button", "btn pri", t.startFirst); st.onclick = () => send({ type: "guide_start" });
+      const re = el("button", "btn sm", t.regenMap); re.onclick = () => send({ type: "guide_generate" });
       row.append(st, re); ctl.append(row);
-    } else ctl.append(el("p", "muted", "等房主開始。"));
+    } else ctl.append(el("p", "muted", t.waitHostStart));
   } else if (isHost()) {
-    const e = el("button", "btn sm", "結束陪玩"); e.onclick = () => send({ type: "guide_end" });
+    const e = el("button", "btn sm", t.endGuide); e.onclick = () => send({ type: "guide_end" });
     ctl.append(e);
   }
   if (ctl.childNodes.length) box.append(ctl);
@@ -405,19 +427,19 @@ function playCard(g) {
   const p = g.play, graph = g.graph;
   const c = el("section", "card stack");
   if (p.done) {
-    c.append(el("div", "big", "每個人都走完一輪了 🎉"));
-    c.append(el("div", "subh", "這一輪你們已經走過"));
+    c.append(el("div", "big", t.allDone));
+    c.append(el("div", "subh", t.walked));
     for (const st of graph.steps) {
       const r = el("div", "cov"); const dot = el("i"); const seen = (p.visits[st.id] || 0) > 0;
       dot.style.background = seen ? "var(--ok)" : "#d0d5da";
-      r.append(dot, el("span", seen ? null : "muted", seen ? st.text : `還沒遇到：${st.text}`));
+      r.append(dot, el("span", seen ? null : "muted", seen ? st.text : fmt(t.notYet, { t: st.text })));
       c.append(r);
     }
-    c.append(el("p", "muted small", "之後遇到沒走過的步驟，可以回到這裡看回合地圖，或直接問規則。"));
+    c.append(el("p", "muted small", t.afterNote));
     if (isHost()) {
       const row = el("div", "row");
-      const again = el("button", "btn", "再走一次"); again.onclick = () => send({ type: "guide_start" });
-      const end = el("button", "btn pri", "繼續遊戲"); end.onclick = () => send({ type: "guide_end" });
+      const again = el("button", "btn", t.again); again.onclick = () => send({ type: "guide_start" });
+      const end = el("button", "btn pri", t.continueGame); end.onclick = () => send({ type: "guide_end" });
       row.append(again, end); c.append(row);
     }
     return c;
@@ -426,30 +448,30 @@ function playCard(g) {
   const cur = p.seats[p.seatIdx];
   const turn = el("div", "turn");
   turn.append(avatar(cur.name, cur.color));
-  const tx = el("div"); tx.append(el("b", null, `輪到 ${cur.name}`), el("div", "small", `第 ${p.seatIdx + 1} / ${p.seats.length} 位玩家`));
+  const tx = el("div"); tx.append(el("b", null, fmt(t.turnOf, { name: cur.name })), el("div", "small", fmt(t.seatLine, { i: p.seatIdx + 1, n: p.seats.length })));
   turn.append(tx); c.append(turn);
-  if (!st) { c.append(el("div", "err", "找不到目前的步驟")); return c; }
+  if (!st) { c.append(el("div", "err", t.stepMissing)); return c; }
 
   c.append(el("div", "big", st.text));
-  if (st.inferred) c.append(el("div", "warnbox small", "這一步是 AI 推論的（規則書沒寫清楚），有疑問可以按下方「這裡有爭議」。"));
+  if (st.inferred) c.append(el("div", "warnbox small", t.inferredStep));
   const qs = quotesOf(st.cites);
   if (qs.length && p.firstTime) {
-    c.append(el("div", "note", "第一次遇到這一步，規則書這樣寫："));
+    c.append(el("div", "note", t.firstTimeNote));
     quoteRows(c, qs);
   } else if (qs.length) {
-    const det = el("details"); det.append(el("summary", "muted small", "看依據"));
+    const det = el("details"); det.append(el("summary", "muted small", t.seeBasis));
     quoteRows(det, qs); c.append(det);
   }
 
   if (isPlayer()) {
     const hasDice = st.next.some((b) => b.dice && b.dice.length);
     if (hasDice) {
-      const db = el("button", "btn block", `🎲 擲 ${S.diceCount} 顆骰子`);
+      const db = el("button", "btn block", fmt(t.rollN, { n: S.diceCount }));
       db.onclick = () => send({ type: "roll", count: S.diceCount });
       c.append(db);
       if (p.lastRoll && p.suggested != null) {
         const a = el("div", "auto");
-        a.append(el("b", null, `擲出 ${p.lastRoll.values.join("＋")}＝${p.lastRoll.total}`), el("span", null, `→ 自動選了「${st.next[p.suggested].label}」`));
+        a.append(el("b", null, fmt(t.rolled, { v: p.lastRoll.values.join("＋"), t: p.lastRoll.total })), el("span", null, fmt(t.autoPicked, { l: st.next[p.suggested].label })));
         c.append(a);
       }
     }
@@ -464,28 +486,28 @@ function playCard(g) {
       c.append(grid);
     } else {
       const last = p.seatIdx + 1 >= p.seats.length;
-      const btn = el("button", "btn pri block", last ? "回合結束，完成第一輪" : "回合結束，換下一位");
+      const btn = el("button", "btn pri block", last ? t.endTurnLast : t.endTurnNext);
       btn.onclick = () => send({ type: "guide_step", seq: p.seq });
       c.append(btn);
     }
   }
 
-  const det = el("details"); det.append(el("summary", null, "這一步我能做什麼？"));
-  if (!st.next.length) det.append(el("p", "muted", "這一步做完就換下一位玩家。"));
+  const det = el("details"); det.append(el("summary", null, t.whatCanIDo));
+  if (!st.next.length) det.append(el("p", "muted", t.endOfStep));
   for (const b of st.next) {
-    const t = graph.steps.find((s) => s.id === b.to);
+    const target = graph.steps.find((s) => s.id === b.to);
     const r = el("div", "opt");
-    r.append(el("p", null, b.label), el("small", null, "接下來：" + (t?.text || b.to)));
-    if (t) quoteRows(r, quotesOf(t.cites));
+    r.append(el("p", null, b.label), el("small", null, fmt(t.nextIs, { t: target?.text || b.to })));
+    if (target) quoteRows(r, quotesOf(target.cites));
     det.append(r);
   }
   c.append(det);
 
   const q = el("div", "row");
-  const pb = el("button", "btn sm", "私下問規則");
-  pb.onclick = () => { $("pq").value = `「${st.text}」這一步，`; $("pq").dispatchEvent(new Event("input")); switchTab("private"); $("pq").focus(); };
-  const db2 = el("button", "btn sm warn", "這裡有爭議");
-  db2.onclick = () => { setMode("ask"); $("q").value = `「${st.text}」這一步，`; $("q").dispatchEvent(new Event("input")); switchTab("rule"); $("q").focus(); };
+  const pb = el("button", "btn sm", t.askPrivately);
+  pb.onclick = () => { $("pq").value = fmt(t.stepPrefix, { t: st.text }); $("pq").dispatchEvent(new Event("input")); switchTab("private"); $("pq").focus(); };
+  const db2 = el("button", "btn sm warn", t.thisDisputed);
+  db2.onclick = () => { setMode("ask"); $("q").value = fmt(t.stepPrefix, { t: st.text }); $("q").dispatchEvent(new Event("input")); switchTab("rule"); $("q").focus(); };
   q.append(pb, db2); c.append(q);
 
   const strip = el("div", "avs");
@@ -496,8 +518,8 @@ function playCard(g) {
 
 function setupCard(graph) {
   const c = el("section", "card");
-  c.append(el("h3", null, "開局準備"));
-  if (!graph.setup.length) { c.append(el("p", "muted", "規則書沒有列出準備項目。")); return c; }
+  c.append(el("h3", null, t.setupTitle));
+  if (!graph.setup.length) { c.append(el("p", "muted", t.noSetup)); return c; }
   const done = store(setupKey) || {};
   for (const s of graph.setup) {
     const row = el("label", "chk");
@@ -507,31 +529,32 @@ function setupCard(graph) {
     if (s.cites.length) { body.append(document.createTextNode(" ")); s.cites.forEach((id) => body.append(el("span", "cid", id), document.createTextNode(" "))); }
     row.append(cb, body); c.append(row);
   }
-  c.append(el("p", "muted small", "勾選只存在這支手機。"));
+  c.append(el("p", "muted small", t.setupLocal));
   return c;
 }
 
 function mapCard(graph, play) {
   const c = el("section", "card stack");
-  c.append(el("h3", null, "回合地圖：輪到你時依序做什麼"));
+  c.append(el("h3", null, t.mapTitle));
   const byId = new Map(graph.steps.map((s) => [s.id, s]));
   for (const st of graph.steps) {
     const box = el("div", "step" + (st.inferred ? " inf" : "") + (st.end_turn ? " end" : ""));
     if (play && !play.done && play.stepId === st.id) box.style.boxShadow = "0 0 0 3px var(--acc)";
-    const h = el("div"); h.append(el("span", "sid", st.id + (st.id === graph.start ? "．起點" : "")), document.createTextNode(" "), el("b", null, st.text));
-    if (st.inferred) h.append(el("span", "badge inf", "推論"));
-    if (st.end_turn) h.append(el("span", "badge end", "回合結束"));
+    const h = el("div"); h.append(el("span", "sid", st.id + (st.id === graph.start ? t.startTag : "")), document.createTextNode(" "), el("b", null, st.text));
+    if (st.inferred) h.append(el("span", "badge inf", t.inferredTag));
+    if (st.end_turn) h.append(el("span", "badge end", t.endTurnTag));
     box.append(h);
     const qs = quotesOf(st.cites);
-    if (qs.length) { const det = el("details"); det.append(el("summary", "muted small", `依據 ${st.cites.join("、")}`)); quoteRows(det, qs); box.append(det); }
+    if (qs.length) { const det = el("details"); det.append(el("summary", "muted small", fmt(t.basisOf, { c: st.cites.join(t.listSep) }))); quoteRows(det, qs); box.append(det); }
     for (const b of st.next) {
-      const t = byId.get(b.to);
-      box.append(el("div", "br", `→ ${b.label}${b.dice?.length ? `（點數 ${b.dice.join("、")}）` : ""}：${t ? t.text : b.to}`));
+      const target = byId.get(b.to);
+      const dice = b.dice?.length ? fmt(t.diceTag, { d: b.dice.join(t.listSep) }) : "";
+      box.append(el("div", "br", `→ ${b.label}${dice}：${target ? target.text : b.to}`));
     }
     c.append(box);
   }
   if (graph.end) {
-    const e = el("div", "note"); e.append(el("b", null, "遊戲結束："), document.createTextNode(graph.end.text));
+    const e = el("div", "note"); e.append(el("b", null, t.gameEnd), document.createTextNode(graph.end.text));
     c.append(e);
     quoteRows(c, quotesOf(graph.end.cites));
   }
@@ -549,18 +572,18 @@ function renderTools() {
   const out = $("diceOut"); out.replaceChildren();
   const last = S.dice[0];
   if (last) {
-    out.append(el("div", "muted small", `${last.byName} 擲出`));
+    out.append(el("div", "muted small", fmt(t.rolledBy, { name: last.byName })));
     const key = JSON.stringify(last);
     const fresh = lastRollKey !== null && key !== lastRollKey;
     lastRollKey = key;
     const d = el("div", "dice"); last.values.forEach((v) => d.append(die(v, fresh))); out.append(d);
     out.append(el("div", "total", String(last.total)));
-  } else { lastRollKey = ""; out.append(el("p", "muted", "還沒有人擲骰。")); }
+  } else { lastRollKey = ""; out.append(el("p", "muted", t.noRolls)); }
   const hist = $("diceHist"); hist.replaceChildren();
   S.dice.slice(1).forEach((x) => hist.append(el("span", "chip", `${x.byName} ${x.values.join("＋")}`)));
 
   const hints = $("hints"); hints.replaceChildren();
-  if (S.startHints.length) { hints.append(el("div", "subh", "規則書怎麼說")); quoteRows(hints, S.startHints); }
+  if (S.startHints.length) { hints.append(el("div", "subh", t.rulebookSays)); quoteRows(hints, S.startHints); }
 
   const playing = S.guide.play && !S.guide.play.done;
   const players = S.players.filter((p) => p.role === "player");
@@ -570,11 +593,11 @@ function renderTools() {
   order.forEach((dv, i) => {
     const p = byDev.get(dv); if (!p) return;
     const r = el("div", "seat");
-    r.append(el("span", "n", String(i + 1)), avatar(p.name, p.color), el("span", "grow", p.name + (dv === device ? "（你）" : "")));
+    r.append(el("span", "n", String(i + 1)), avatar(p.name, p.color), el("span", "grow", p.name + (dv === device ? t.you : "")));
     if (isHost() && !playing) {
-      const up = el("button", "btn sm", "↑"); up.disabled = i === 0; up.setAttribute("aria-label", `把${p.name}往前移`);
+      const up = el("button", "btn sm", "↑"); up.disabled = i === 0; up.setAttribute("aria-label", `↑ ${p.name}`);
       up.onclick = () => { const o = [...order]; [o[i - 1], o[i]] = [o[i], o[i - 1]]; send({ type: "seats_set", order: o }); };
-      const dn = el("button", "btn sm", "↓"); dn.disabled = i === order.length - 1; dn.setAttribute("aria-label", `把${p.name}往後移`);
+      const dn = el("button", "btn sm", "↓"); dn.disabled = i === order.length - 1; dn.setAttribute("aria-label", `↓ ${p.name}`);
       dn.onclick = () => { const o = [...order]; [o[i + 1], o[i]] = [o[i], o[i + 1]]; send({ type: "seats_set", order: o }); };
       r.append(up, dn);
     }
@@ -586,70 +609,72 @@ function renderTools() {
 
 // ---------- 房規分頁 ----------
 $("hpropBtn").onclick = () => {
-  const t = $("hprop").value.trim();
-  if (!t) return toast("請先寫房規內容");
-  if (send({ type: "vote_open", custom: t })) $("hprop").value = "";
+  const text = $("hprop").value.trim();
+  if (!text) return toast(t.needRuleText);
+  if (send({ type: "vote_open", custom: text })) $("hprop").value = "";
 };
 $("copyHouse").onclick = () => {
-  if (!S?.house.length) return toast("還沒有房規");
-  copyText(`${S.title}．本桌房規\n` + S.house.map((h) => `${h.hid} ${h.text}`).join("\n"));
+  if (!S?.house.length) return toast(t.noHouseToast);
+  copyText(fmt(t.houseCopyHead, { title: S.title }) + "\n" + S.house.map((h) => `${h.hid} ${h.text}`).join("\n"), t);
 };
 $("srcBtn").onclick = () => {
-  const t = $("srcText").value.trim();
-  if (!t) return toast("請先貼上內容");
-  if (send({ type: "source_add", text: t })) $("srcText").value = "";
+  const text = $("srcText").value.trim();
+  if (!text) return toast(t.needPaste);
+  if (send({ type: "source_add", text })) $("srcText").value = "";
 };
 $("closeRoom").onclick = () => { $("closeConfirm").hidden = false; $("closeRoom").hidden = true; };
 $("closeNo").onclick = () => { $("closeConfirm").hidden = true; $("closeRoom").hidden = false; };
 $("closeYes").onclick = () => send({ type: "close_room" });
-$("codeChip").onclick = () => copyText(`${location.origin}/room.html?c=${code}`);
+$("codeChip").onclick = () => copyText(`${location.origin}/room.html?c=${code}`, t);
 
 function renderHouse() {
   const box = $("house"); box.replaceChildren();
-  if (!S.house.length) box.append(el("p", "muted", "還沒有房規。規則書沒寫到的爭議，投票通過後會出現在這裡，之後的裁定也會引用。"));
+  if (!S.house.length) box.append(el("p", "muted", t.noHouse));
   for (const h of S.house) {
     const r = el("div", "hrow");
     r.append(el("span", "cid h", h.hid));
-    const b = el("div", "grow"); b.append(el("div", null, h.text), el("div", "muted small", `來自「${h.origin}」．${h.tally} 票`));
+    const b = el("div", "grow"); b.append(el("div", null, h.text), el("div", "muted small", fmt(t.houseMeta, { o: h.origin, t: h.tally })));
     r.append(b);
-    if (isHost()) { const del = el("button", "btn sm", "刪除"); del.onclick = () => send({ type: "house_delete", hid: h.hid }); r.append(del); }
+    if (isHost()) { const del = el("button", "btn sm", t.del); del.onclick = () => send({ type: "house_delete", hid: h.hid }); r.append(del); }
     box.append(r);
   }
   $("hprop").disabled = !isPlayer(); $("hpropBtn").disabled = !isPlayer();
   const vb = $("votes"); vb.replaceChildren();
   for (const v of S.votes) vb.append(voteBox(v, true));
 
-  $("scount").textContent = S.sentences.length;
+  $("rbSummary").textContent = fmt(t.rulebookAll, { n: S.sentences.length });
   const rb = $("rulebook"); rb.replaceChildren(); quoteRows(rb, S.sentences);
   $("sourceCard").hidden = !isHost();
+  $("roomLang").textContent = fmt(t.roomLangNote, { l: t.langName[S.lang] || t.langName["zh-Hant"] });
 
   const pl = $("players"); pl.replaceChildren();
   for (const p of S.players) {
     const r = el("div", "row");
-    r.append(avatar(p.name, p.color, { off: !p.online, dot: p.online }), el("span", "grow", p.name + (p.device === device ? "（你）" : "")));
-    r.append(el("span", "muted small", [p.isHost ? "房主" : p.role === "viewer" ? "只看" : "玩家", p.online ? "在線" : "離線"].join("．")));
+    r.append(avatar(p.name, p.color, { off: !p.online, dot: p.online }), el("span", "grow", p.name + (p.device === device ? t.you : "")));
+    r.append(el("span", "muted small", [p.isHost ? t.host : p.role === "viewer" ? t.roleViewer : t.rolePlayer, p.online ? t.online : t.offline].join(" · ")));
     pl.append(r);
   }
-  $("expiry").textContent = `房間會在最後一次活動 48 小時後自動刪除（目前預計 ${new Date(S.expiresAt).toLocaleString("zh-TW", { hour12: false })}）。`;
+  const locale = lang === "en" ? "en-US" : lang === "zh-Hans" ? "zh-CN" : "zh-TW";
+  $("expiry").textContent = fmt(t.expiry, { t: new Date(S.expiresAt).toLocaleString(locale, { hour12: false }) });
   $("closeBox").hidden = !isHost();
 }
 
 // ---------- 啟動 ----------
 async function boot() {
-  if (!/^[A-Z0-9]{6}$/.test(code)) return fatal("房號不正確。");
+  applyLang(lang);
+  if (!/^[A-Z0-9]{6}$/.test(code)) return fatal("badCode");
   $("code").textContent = code;
-  let info;
   try {
-    const r = await fetch(`/api/rooms/${code}`);
-    if (!r.ok) return fatal("房間不存在或已過期。");
+    const r = await fetch(`/api/rooms/${code}?lang=${lang}`);
+    if (!r.ok) return fatal("roomGone");
     info = await r.json();
   } catch {
-    return fatal("網路連線失敗，請重新整理。");
+    return fatal("netLater");
   }
   $("title").textContent = info.title;
   if (store("name")) { connect(); return; }
 
-  $("joinInfo").textContent = `「${info.title}」．目前 ${info.players} 人`;
+  $("joinInfo").textContent = fmt(t.joinInfo, { title: info.title, n: info.players });
   $("joinCard").hidden = false;
   $("roleSeg").addEventListener("click", (e) => {
     const v = e.target.dataset?.v; if (!v) return;
@@ -659,7 +684,7 @@ async function boot() {
   [...$("roleSeg").children].forEach((b) => b.classList.toggle("on", b.dataset.v === joinRole));
   $("joinBtn").onclick = () => {
     const n = $("jname").value.trim();
-    if (!n) return toast("請先填暱稱");
+    if (!n) return toast(t.errName);
     store("name", n);
     $("joinCard").hidden = true;
     connect();

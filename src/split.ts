@@ -6,7 +6,11 @@ const CLAUSE = /^(\d+(?:\.\d+)*)[\s、．.)）:：]*(.+)$/;
 const ARTICLE = /^第\s*(\d+)\s*[條条章節节]\s*[、:：]?\s*(.*)$/;
 
 function splitParts(body: string): string[] {
-  const raw = body.split(/(?<=[。！？；!?;])/).map((s) => s.trim()).filter(Boolean);
+  // 中文在句號、問號、分號後切；英文在「句點＋空白＋大寫字母或數字」處切（避免切到 3.5、e.g. 這類寫法）
+  const raw = body
+    .split(/(?<=[。！？；!?;])|(?<=[a-z0-9)"'”’][.])\s+(?=[A-Z0-9"“(])/)
+    .map((s) => (s ?? "").trim())
+    .filter(Boolean);
   const out: string[] = [];
   for (const p of raw) {
     // 太短的碎片（例如單獨的引號）併回上一句

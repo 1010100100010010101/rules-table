@@ -1,0 +1,39 @@
+1.1 These rules summarize common play; they are not the official rulebook. 2 to 6 players; best with 4 or 5.
+1.2 The goal is to bankrupt every other player. The last player who is not bankrupt wins.
+2.1 Each player chooses a token and places it on GO.
+2.2 Each player takes $1500. The rest of the money, the houses, and the hotels stay in the bank.
+2.3 Shuffle the Chance cards and the Community Chest cards separately and place them face down in the middle of the board.
+2.4 Each player rolls two dice. The highest total goes first, then play continues clockwise.
+3.1 On your turn, roll two dice and move clockwise by the total.
+3.2 If both dice show the same number (doubles), roll again after resolving the space you landed on.
+3.3 If you roll doubles three times in a row in one turn, do not move on the third roll; go directly to Jail.
+3.4 When you pass or land on GO, collect $200 from the bank.
+4.1 If you land on an unowned property, you may buy it from the bank at the listed price.
+4.2 If you don't buy it, the bank immediately auctions it. Every player, including you, may bid; there is no minimum, and the highest bidder buys it.
+4.3 If you land on a property owned by another player that is not mortgaged, pay the owner the rent shown on the deed.
+4.4 The owner must ask for rent before the next player rolls; if they don't, the rent is not owed.
+4.5 If one owner holds every property of a color group and none of them has buildings, rent on those unimproved properties is doubled.
+5.1 If you land on Chance or Community Chest, draw the top card of that deck and follow it, then put it on the bottom of that deck.
+5.2 If you land on Income Tax, choose to pay $200 or 10% of your total worth (cash, printed property prices, and buildings). You must decide right after rolling.
+5.3 Nothing happens on Free Parking or Just Visiting.
+6.1 If you land on Go to Jail, draw a Go to Jail card, or roll three doubles in a row, move your token directly to Jail. You do not pass GO and do not collect $200.
+6.2 While in Jail you can still collect rent, trade, and build.
+6.3 To get out of Jail: pay the bank $50 before rolling, use a Get Out of Jail Free card before rolling, or roll doubles.
+6.4 If you roll doubles to get out of Jail, move by that roll, but you do not roll again.
+6.5 If you fail to roll doubles on three turns in a row, after the third roll you must pay $50 to leave and then move by that roll.
+6.6 A Get Out of Jail Free card may be sold to another player at a price you both agree on.
+7.1 A player who owns every property of a color group may buy houses from the bank before rolling on their turn and place them on those properties.
+7.2 Build evenly: within a color group, no property may have more than one house more than any other.
+7.3 Once a property has 4 houses, you may pay to replace the 4 houses with 1 hotel.
+7.4 If the bank runs out of houses or hotels, no one can build until some are returned.
+7.5 When you sell houses back, the bank pays half the house price. Selling must also be even.
+8.1 A property with no buildings may be mortgaged to the bank for the mortgage value printed on the back of the deed. Turn the deed face down to show it is mortgaged.
+8.2 A mortgaged property collects no rent.
+8.3 To lift a mortgage, pay the bank the mortgage value plus 10% interest.
+8.4 If any property in a color group has buildings, no property in that group can be mortgaged until the buildings are sold.
+9.1 Players may trade properties, cash, and Get Out of Jail Free cards with each other at any time, at any agreed price.
+9.2 Properties with buildings cannot be traded; sell the buildings back to the bank first.
+10.1 If you can't pay what you owe, you may sell buildings and mortgage properties to raise money.
+10.2 If you still can't pay after that, you are bankrupt and leave the game.
+10.3 If you go bankrupt owing another player, give that player all your cash, properties, and cards. For each mortgaged property they receive, they must immediately pay the bank 10% of its mortgage value; they may also lift the mortgage right away by paying the mortgage value, otherwise lifting it later costs the mortgage value plus 10%.
+10.4 If you go bankrupt owing the bank, everything you own goes to the bank, and the bank immediately auctions those properties.

@@ -1,0 +1,16 @@
+1.1 Players are night-market vendors who run stalls to earn coins.
+1.2 When any player has 30 coins, the game ends at the end of that round. The player with the most coins wins.
+2.1 Each player takes 1 cart pawn and 10 coins.
+2.2 Shuffle the stall cards and place them face down as a deck. Shuffle the event cards into a separate deck.
+2.3 The youngest player goes first, then play continues clockwise.
+3.1 Each turn, in order: roll and move, resolve the space, and optionally open a stall.
+3.2 After your turn, the player on your left takes their turn.
+4.1 On your turn, roll one die and move your cart clockwise that many spaces.
+4.2 If you roll a 6, you may immediately roll one extra time. The extra roll does not trigger this rule again.
+4.3 If you land on another player's stall, pay its owner the amount shown on that stall. If you don't have enough coins, pay all your coins; you don't go into debt.
+5.1 Each player may own at most 3 stalls.
+5.2 If you land on an empty lot, you may pay the price on a stall card to open a stall on that space.
+5.3 Once a stall opens, it stays open until the end of the game.
+6.1 If you land on an event space, draw an event card and resolve it immediately.
+6.2 Typhoon card: no stall collects rent this round.
+6.3 Night Market Festival card: the player who draws it gains 5 coins.

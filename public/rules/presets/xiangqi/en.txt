@@ -1,0 +1,29 @@
+1.1 Xiangqi (Chinese chess) is played by two players, Red and Black. Red moves first.
+1.2 You win by checkmating the opponent's General, or by leaving the opponent with no legal move.
+2.1 The board has 9 vertical lines and 10 horizontal lines. Pieces are placed on the intersections.
+2.2 The middle band that no vertical line crosses is the River, which separates the two sides.
+2.3 The 3×3 area with diagonal lines in the middle of each back edge is the Palace.
+2.4 Each side has 16 pieces: 1 General, 2 Advisors, 2 Elephants, 2 Chariots, 2 Horses, 2 Cannons, and 5 Soldiers.
+2.5 Set up in the standard positions: on the back line, from left to right, Chariot, Horse, Elephant, Advisor, General, Advisor, Elephant, Horse, Chariot; Cannons on the third line, on the second vertical line from each side; Soldiers on the fourth line, on every other vertical line.
+3.1 Players take turns moving one of their own pieces.
+3.2 Moving a piece onto a point occupied by an opposing piece captures it; remove it from the board.
+3.3 You cannot move onto a point occupied by your own piece.
+4.1 The General stays inside the Palace and moves one point horizontally or vertically.
+4.2 The two Generals may not face each other on the same vertical line with no pieces between them ("flying general").
+4.3 Advisors stay inside the Palace and move one point diagonally.
+4.4 Elephants move exactly two points diagonally and cannot cross the River.
+4.5 An Elephant cannot move if the point midway along its diagonal is occupied ("blocking the elephant's eye").
+4.6 Chariots move any number of points horizontally or vertically but cannot jump over pieces.
+4.7 Horses move one point horizontally or vertically, then one point diagonally outward.
+4.8 A Horse cannot move in a direction if the point next to it in that direction is occupied ("hobbling the horse's leg").
+4.9 When not capturing, a Cannon moves like a Chariot.
+4.10 To capture, a Cannon must jump over exactly one piece (of either side) between it and its target.
+4.11 Before crossing the River, a Soldier moves one point forward only.
+4.12 After crossing the River, a Soldier may move one point forward or sideways, but never backward.
+5.1 A move that threatens to capture the opponent's General on the next move is "check."
+5.2 A player in check must get out of it immediately, for example by moving the General, capturing the attacking piece, or blocking.
+5.3 You may not make a move that leaves your own General in check.
+5.4 If you are in check and cannot escape, you are checkmated and lose.
+5.5 If you are not in check but have no legal move, you also lose.
+6.1 A player may not give check with the same moves over and over; the player making perpetual check must change moves or lose.
+6.2 If neither player can checkmate the other, they may agree to a draw.

@@ -1,5 +1,6 @@
 [
   {
+    "lang": "zh-Hant",
     "label": "擲到 6 能不能一直再擲？（明文）",
     "mode": "duel",
     "response": {
@@ -9,6 +10,42 @@
       "evidence_quotes": [
         { "sid": "4.2-1", "text": "擲出 6 點時，可立即額外擲骰一次。" },
         { "sid": "4.2-2", "text": "額外擲骰的結果不會再觸發本條效果。" }
+      ],
+      "related_quotes": [],
+      "house_rule_options": [],
+      "checks": { "schema": true, "ids_exist": true, "kind_rules": true },
+      "needs_review": false
+    }
+  },
+  {
+    "lang": "zh-Hans",
+    "label": "掷到 6 能不能一直再掷？（明文）",
+    "mode": "duel",
+    "response": {
+      "kind": "explicit",
+      "verdict": "B",
+      "result": "掷出 6 点可立即额外掷骰一次；但额外掷骰的结果不会再触发，因此不能一直再掷。",
+      "evidence_quotes": [
+        { "sid": "4.2-1", "text": "掷出 6 点时，可立即额外掷骰一次。" },
+        { "sid": "4.2-2", "text": "额外掷骰的结果不会再触发本条效果。" }
+      ],
+      "related_quotes": [],
+      "house_rule_options": [],
+      "checks": { "schema": true, "ids_exist": true, "kind_rules": true },
+      "needs_review": false
+    }
+  },
+  {
+    "lang": "en",
+    "label": "Can you keep rolling after a 6? (stated)",
+    "mode": "duel",
+    "response": {
+      "kind": "explicit",
+      "verdict": "B",
+      "result": "A 6 lets you roll one extra time, but the extra roll never triggers the rule again, so you can't keep rolling.",
+      "evidence_quotes": [
+        { "sid": "4.2-1", "text": "If you roll a 6, you may immediately roll one extra time." },
+        { "sid": "4.2-2", "text": "The extra roll does not trigger this rule again." }
       ],
       "related_quotes": [],
       "house_rule_options": [],

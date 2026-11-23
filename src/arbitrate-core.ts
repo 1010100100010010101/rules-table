@@ -4,20 +4,35 @@ import type { Sentence } from "./split";
 import { parseJson, validateVerdict } from "./validate";
 import { fail, type ArbInput, type Fail } from "./input";
 import { normalizeGraph, validateGraph, type Graph } from "./graph-validate";
+import { tr, normLang, LANG_NAME, type Lang } from "./i18n";
+
+// 附加在系統提示後面：要求模型用房間的語言寫給玩家看的文字
+function langNote(lang: Lang, fields: string): string {
+  return `
+
+# 輸出語言
+${LANG_NAME[lang]}。${fields}都用這個語言寫；JSON 的鍵名、kind 與 verdict 的值、規則編號不要翻譯。`;
+}
 
 export type CallFn = (system: string, user: string, opts?: { maxTokens?: number; timeoutMs?: number }) => Promise<ModelResult>;
 
-function upstreamFail(res: ModelResult): Fail | null {
-  if (res.status === 0) return fail(503, "no_key", "伺服器還沒設定模型金鑰，可以先看預錄範例");
-  if (res.status === 401 || res.status === 403) return fail(502, "auth_error", "服務設定有誤（金鑰無效）");
-  if (res.status === 402) return fail(502, "no_balance", "模型服務餘額不足");
-  if (res.status === 404) return fail(502, "model_not_found", "服務設定有誤（找不到模型）");
-  if (res.status === 429) return fail(429, "rate_limited", "使用人數多，請稍後再試");
-  if (res.status !== 200) return fail(502, "upstream_error", `模型服務錯誤（${res.status}）`);
+function upstreamFail(res: ModelResult, lang?: Lang): Fail | null {
+  const t = tr(lang);
+  if (res.status === 0) return fail(503, "no_key", t.noKey);
+  if (res.status === 401 || res.status === 403) return fail(502, "auth_error", t.authError);
+  if (res.status === 402) return fail(502, "no_balance", t.noBalance);
+  if (res.status === 404) return fail(502, "model_not_found", t.modelNotFound);
+  if (res.status === 429) return fail(429, "rate_limited", t.modelBusy);
+  if (res.status !== 200) return fail(502, "upstream_error", t.upstream(res.status));
   return null;
 }
 
-export async function arbitrateWith(call: CallFn, prompt: string, input: ArbInput, sentences: Sentence[]) {
+export async function arbitrateWith(call: CallFn, basePrompt: string, input: ArbInput, sentences: Sentence[], langIn?: Lang) {
+  const lang = normLang(langIn);
+  const t = tr(lang);
+  const prompt = basePrompt + langNote(lang, "result、reasoning、clarifying_question、house_rule_options 的 text 與 effect ");
+  const maxResult = lang === "en" ? 600 : 300;
+  const maxOpt = lang === "en" ? 200 : 120;
   const ids = new Set(sentences.map((s) => s.sid));
   const rules = sentences.map((s) => `[${s.sid}] ${s.text}`).join("\n");
   const request =
@@ -40,10 +55,10 @@ export async function arbitrateWith(call: CallFn, prompt: string, input: ArbInpu
     try {
       res = await call(prompt, user + retryNote, { maxTokens: 2000, timeoutMs: 30000 });
     } catch {
-      return fail(504, "timeout", "模型回應太慢，請再試一次");
+      return fail(504, "timeout", t.timeout);
     }
     usage.push(res.usage);
-    const f = upstreamFail(res);
+    const f = upstreamFail(res, lang);
     if (f) return f;
     parsed = parseJson(res.text ?? "");
     errors = validateVerdict(parsed, ids);
@@ -60,7 +75,7 @@ export async function arbitrateWith(call: CallFn, prompt: string, input: ArbInpu
     ? parsed.house_rule_options
         .filter((o: any) => o && typeof o.text === "string" && o.text.trim())
         .slice(0, 3)
-        .map((o: any) => ({ text: o.text.trim().slice(0, 120), effect: String(o.effect ?? "").slice(0, 120) }))
+        .map((o: any) => ({ text: o.text.trim().slice(0, maxOpt), effect: String(o.effect ?? "").slice(0, maxOpt) }))
     : [];
 
   return {
@@ -68,7 +83,7 @@ export async function arbitrateWith(call: CallFn, prompt: string, input: ArbInpu
     data: {
       kind: ok ? parsed.kind : parsed?.kind ?? "unclear",
       verdict: parsed?.verdict ?? null,
-      result: typeof parsed?.result === "string" ? parsed.result.slice(0, 300) : "模型回傳格式有誤，這次結果需要人工確認。",
+      result: typeof parsed?.result === "string" ? parsed.result.slice(0, maxResult) : t.badFormat,
       evidence: Array.isArray(parsed?.evidence) ? parsed.evidence : [],
       related: Array.isArray(parsed?.related) ? parsed.related : [],
       reasoning: parsed?.reasoning ?? null,
@@ -89,7 +104,10 @@ export async function arbitrateWith(call: CallFn, prompt: string, input: ArbInpu
   };
 }
 
-export async function graphWith(call: CallFn, prompt: string, sentences: Sentence[]): Promise<{ ok: true; graph: Graph } | Fail> {
+export async function graphWith(call: CallFn, basePrompt: string, sentences: Sentence[], langIn?: Lang): Promise<{ ok: true; graph: Graph } | Fail> {
+  const lang = normLang(langIn);
+  const t = tr(lang);
+  const prompt = basePrompt + langNote(lang, "setup 與 steps 的 text、分支的 label、end 的 text ");
   const ids = new Set(sentences.map((s) => s.sid));
   const rules = sentences.map((s) => `[${s.sid}] ${s.text}`).join("\n");
   const user = `<rules>\n${rules}\n</rules>`;
@@ -100,13 +118,36 @@ export async function graphWith(call: CallFn, prompt: string, sentences: Sentenc
     try {
       res = await call(prompt, user + retryNote, { maxTokens: 6000, timeoutMs: 90000 });
     } catch {
-      return fail(504, "timeout", "整理回合地圖逾時，請再試一次");
+      return fail(504, "timeout", t.graphTimeout);
     }
-    const f = upstreamFail(res);
+    const f = upstreamFail(res, lang);
     if (f) return f;
     const g = normalizeGraph(parseJson(res.text ?? ""));
     errors = validateGraph(g, ids);
     if (errors.length === 0) return { ok: true, graph: g! };
   }
-  return fail(422, "graph_invalid", `回合地圖沒有通過檢查：${errors.slice(0, 3).join("；")}`);
+  return fail(422, "graph_invalid", t.graphInvalid(errors.slice(0, 3).join("；")));
+}
+
+// 翻譯規則書：保留條號與分行，回傳翻好的純文字（之後一樣要給房主檢查）
+export async function translateWith(call: CallFn, prompt: string, text: string, toIn: Lang): Promise<{ ok: true; text: string } | Fail> {
+  const to = normLang(toIn);
+  const t = tr(to);
+  const user = `<target>${LANG_NAME[to]}</target>\n<text>\n${text}\n</text>`;
+  let res: ModelResult;
+  try {
+    res = await call(prompt, user, { maxTokens: 8000, timeoutMs: 120000 });
+  } catch {
+    return fail(504, "timeout", t.translateTimeout);
+  }
+  const f = upstreamFail(res, to);
+  if (f) return f;
+  const out = (res.text ?? "")
+    .replace(/^\s*```[a-z]*\s*/i, "")
+    .replace(/```\s*$/, "")
+    .replace(/^\s*<text>\s*/, "")
+    .replace(/\s*<\/text>\s*$/, "")
+    .trim();
+  if (!out) return fail(502, "upstream", t.translateFail);
+  return { ok: true, text: out };
 }
