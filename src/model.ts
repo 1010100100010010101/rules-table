@@ -12,22 +12,23 @@ export type ModelResult = { status: number; text: string | null; usage: any; err
 export async function callModel(
   env: ModelEnv,
   system: string,
-  user: string,
-  opts: { maxTokens?: number; timeoutMs?: number } = {},
+  user: string | unknown[],
+  opts: { maxTokens?: number; timeoutMs?: number; model?: string; baseUrl?: string; apiKey?: string } = {},
 ): Promise<ModelResult> {
-  if (!env.MODEL_API_KEY) return { status: 0, text: null, usage: null, error: "no_key" };
+  const key = opts.apiKey || env.MODEL_API_KEY;
+  if (!key) return { status: 0, text: null, usage: null, error: "no_key" };
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 30000);
   try {
-    const r = await fetch(`${env.MODEL_BASE_URL.replace(/\/$/, "")}/chat/completions`, {
+    const r = await fetch(`${(opts.baseUrl || env.MODEL_BASE_URL).replace(/\/$/, "")}/chat/completions`, {
       method: "POST",
       signal: ctrl.signal,
       headers: {
-        Authorization: `Bearer ${env.MODEL_API_KEY}`,
+        Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: env.MODEL_ID,
+        model: opts.model || env.MODEL_ID,
         max_tokens: opts.maxTokens ?? 2000,
         messages: [
           { role: "system", content: system },

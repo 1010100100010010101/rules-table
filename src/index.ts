@@ -1,4 +1,5 @@
 import { analyzeRoute } from "./analyze";
+import { checkImage, ocrPage } from "./ocr";
 import { splitSentences, type Sentence } from "./split";
 import type { AppEnv } from "./env";
 
@@ -46,6 +47,21 @@ export default {
       if (text.length > 20000) return json({ error: "too_long", message: "規則書最多 20,000 字" }, 400);
       const sentences = splitSentences(text);
       return json({ count: sentences.length, sentences: sentences.slice(0, 400) });
+    }
+
+    // 拍照辨識規則書（一次一頁）
+    if (path === "/api/ocr" && request.method === "POST") {
+      const body: any = await request.json().catch(() => null);
+      const bad = checkImage(body?.image);
+      if (bad) return json({ error: "bad_image", message: bad }, 400);
+      const ticket = await usage().take(`ocr:${ip}`, 10, Number(env.DAILY_LIMIT ?? 2000));
+      if (!ticket.ok) {
+        return ticket.reason === "daily"
+          ? json({ error: "quota_daily", message: "今天的辨識額度用完了，請改用貼上文字" }, 429)
+          : json({ error: "rate_limited", message: `太快了，請 ${ticket.retryAfter} 秒後再試` }, 429);
+      }
+      const r = await ocrPage(body.image, env);
+      return r.ok ? json(r) : json({ error: r.error, message: r.message }, r.status);
     }
 
     // 單機版仲裁

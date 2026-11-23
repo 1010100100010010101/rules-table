@@ -5,7 +5,15 @@ const code = (params.get("c") || "").toUpperCase();
 const device = deviceId();
 const privKey = `priv:${code}`;
 const setupKey = `setup:${code}`;
-const DICE = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+// 骰面點數在 3×3 格子裡的位置
+const PIPS = { 1: [4], 2: [2, 6], 3: [2, 4, 6], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+let lastRollKey = null;
+function die(v, roll) {
+  const d = el("span", "die" + (v === 1 ? " one" : "") + (roll ? " roll" : ""));
+  d.setAttribute("role", "img"); d.setAttribute("aria-label", `${v} 點`);
+  for (let i = 0; i < 9; i++) d.append(el("i", PIPS[v].includes(i) ? "p" : null));
+  return d;
+}
 
 let S = null;            // 伺服器送來的最新房間狀態
 let ws = null;
@@ -200,6 +208,7 @@ function disputeCard(d) {
     return c;
   }
   const r = d.result;
+  c.classList.add("verdict"); c.dataset.kind = r.kind;
   const body = el("div"); body.style.marginTop = "10px";
   renderVerdict(body, r, d.mode);
   c.append(body);
@@ -541,9 +550,12 @@ function renderTools() {
   const last = S.dice[0];
   if (last) {
     out.append(el("div", "muted small", `${last.byName} 擲出`));
-    const d = el("div", "dice"); last.values.forEach((v) => d.append(el("span", null, DICE[v - 1]))); out.append(d);
+    const key = JSON.stringify(last);
+    const fresh = lastRollKey !== null && key !== lastRollKey;
+    lastRollKey = key;
+    const d = el("div", "dice"); last.values.forEach((v) => d.append(die(v, fresh))); out.append(d);
     out.append(el("div", "total", String(last.total)));
-  } else out.append(el("p", "muted", "還沒有人擲骰。"));
+  } else { lastRollKey = ""; out.append(el("p", "muted", "還沒有人擲骰。")); }
   const hist = $("diceHist"); hist.replaceChildren();
   S.dice.slice(1).forEach((x) => hist.append(el("span", "chip", `${x.byName} ${x.values.join("＋")}`)));
 

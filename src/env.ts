@@ -9,4 +9,8 @@ export interface AppEnv {
   MODEL_BASE_URL: string;
   MODEL_ID: string;
   DAILY_LIMIT?: string;
+  // 拍照辨識用的視覺模型；沒設就沿用上面三個（deepseek-flash 本身能看圖）
+  VISION_MODEL_ID?: string;
+  VISION_BASE_URL?: string;
+  VISION_API_KEY?: string;
 }

@@ -4,12 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>單機試用｜規則仲裁桌</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%231b2430%22/%3E%3Ctext x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22white%22%3E%E2%9A%96%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2226%22 fill=%22%23f5b83d%22/%3E%3Cpath d=%22M50 18v62M32 80h36M24 34h52M24 34l-12 24a12 12 0 0 0 24 0zM76 34l-12 24a12 12 0 0 0 24 0z%22 fill=%22none%22 stroke=%22%231c2433%22 stroke-width=%227%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<meta name="theme-color" content="#233a5e">
 <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <a class="brand" href="/"><span class="logo">⚖</span>規則仲裁桌</a>
+  <a class="brand" href="/"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span>規則仲裁桌</a>
   <span class="sub">單機試用．《夜市攤主》示例</span>
 </div></header>
 
@@ -77,7 +81,7 @@ function showErr(d) {
 
 function render(d, m) {
   const box = $("out"); box.replaceChildren();
-  const c = el("div", "card");
+  const c = el("div", "card verdict"); c.dataset.kind = d.kind;
   renderVerdict(c, d, m);
   if (d.house_rule_options?.length) {
     c.append(el("div", "subh", "可以定成房規（AI 建議，不是規則）"));

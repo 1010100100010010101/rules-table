@@ -5,58 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>規則仲裁桌</title>
 <meta name="description" content="兩人各說一句規則，AI 指出規則書哪一句支持誰；沒寫到的，全桌投票定房規。">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%231b2430%22/%3E%3Ctext x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22white%22%3E%E2%9A%96%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2226%22 fill=%22%23f5b83d%22/%3E%3Cpath d=%22M50 18v62M32 80h36M24 34h52M24 34l-12 24a12 12 0 0 0 24 0zM76 34l-12 24a12 12 0 0 0 24 0z%22 fill=%22none%22 stroke=%22%231c2433%22 stroke-width=%227%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<meta name="theme-color" content="#233a5e">
 <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <a class="brand" href="/"><span class="logo">⚖</span>規則仲裁桌</a>
+  <a class="brand" href="/"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span>規則仲裁桌</a>
 </div></header>
 
 <main>
   <section class="hero">
-    <h1>吵規則，不如問規則書</h1>
-    <p class="muted">兩人各說一句規則，AI 指出規則書哪一句支持誰，原句由程式逐字取出、不會被改寫。規則書沒寫到的，全桌投票定成房規。</p>
+    <h1>吵規則，不如翻規則書</h1>
+    <p>兩個人各說一句規則，AI 指出規則書裡哪一句支持誰。原句由程式照抄，AI 改不了。規則書沒寫到的，全桌投票定成房規。</p>
+    <div class="scene" aria-label="使用示範">
+      <div class="say"><span class="av" style="background:#2b6cb0">哲</span><p>擲到 6 可以一直再擲！</p></div>
+      <div class="say r"><span class="av" style="background:#b83280">花</span><p>不對，只能再擲一次。</p></div>
+      <div class="verdict-demo">
+        <span class="kind k-explicit">明文</span>
+        <div class="vm">小花的說法符合規則</div>
+        <div class="ev"><span class="cid">4.2-2</span><span>額外擲骰的結果不會再觸發本條效果。</span></div>
+      </div>
+    </div>
   </section>
 
-  <section class="card">
+  <div class="door" id="door" role="tablist">
+    <button type="button" data-v="create" class="on" role="tab">開新桌子</button>
+    <button type="button" data-v="join" role="tab">加入朋友的桌子</button>
+  </div>
+
+  <section class="card" id="createCard">
     <h2>開一張桌子</h2>
-    <p class="muted">你會成為房主，其他人用手機輸入房號或打開連結加入，不用註冊。</p>
+    <p class="muted">你會成為房主。其他人用手機輸入房號或打開連結就能加入，不用註冊。</p>
     <label for="cname">你的暱稱</label>
     <input type="text" id="cname" maxlength="12" placeholder="例如：阿哲">
-    <label>規則書</label>
-    <div class="seg" id="srcSeg"><button data-v="sample" class="on" type="button">《夜市攤主》示例</button><button data-v="paste" type="button">貼上自己的規則</button></div>
+    <label>規則書從哪裡來</label>
+    <div class="seg" id="srcSeg">
+      <button data-v="sample" class="on" type="button">示例遊戲</button>
+      <button data-v="photo" type="button">拍照上傳</button>
+      <button data-v="paste" type="button">貼上文字</button>
+    </div>
+    <p class="muted small" id="sampleNote" style="margin:8px 0 0">《夜市攤主》是我們自己寫的示例規則，19 句，適合先試玩。</p>
+
+    <div id="photoBox" hidden>
+      <label class="drop" for="photoIn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.8l1.4-2h4.6l1.4 2h1.8A2.5 2.5 0 0 1 20 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5z"/><circle cx="12" cy="12.5" r="3.5"/></svg>
+        <b>拍規則書，或從相簿選照片</b>
+        <span>一頁一張，最多 8 頁。照片只用來辨識文字，不會保存。</span>
+      </label>
+      <input type="file" id="photoIn" accept="image/*" multiple hidden>
+      <div class="thumbs" id="thumbs"></div>
+      <button class="btn acc block" id="ocrBtn" type="button" style="margin-top:12px" hidden>辨識文字</button>
+      <p class="muted small" id="ocrMsg" style="margin:8px 0 0"></p>
+    </div>
+
     <div id="pasteBox" hidden>
+      <div class="warnbox small" id="reviewNote" hidden style="margin-top:12px">AI 抄寫的文字可能有錯字。請對照照片看一遍，標成〔看不清〕的地方要補上或刪掉，確認後才建立房間。之後的裁定都只會引用這份文字。</div>
       <label for="ctitle">遊戲名稱</label>
       <input type="text" id="ctitle" maxlength="30" placeholder="例如：我們的大富翁">
       <label for="ctext">規則文字</label>
-      <textarea id="ctext" maxlength="20000" placeholder="每行一條，開頭寫條號最好，例如：&#10;4.2 擲出 6 點時，可立即額外擲骰一次。&#10;沒有條號也可以，會依行數自動編號。"></textarea>
-      <div class="row"><span class="muted grow" id="pcount">最多 20,000 字</span><button class="btn sm" id="pbtn" type="button">預覽切句</button></div>
+      <textarea id="ctext" maxlength="20000" placeholder="每行一條，開頭寫條號最好，例如：&#10;4.2 擲出 6 點時，可立即額外擲骰一次。&#10;沒有條號也可以，會依段落自動編號。"></textarea>
+      <div class="row" style="margin-top:6px"><span class="muted small grow" id="pcount">最多 20,000 字</span><button class="btn sm" id="pbtn" type="button">預覽編號</button></div>
       <div id="pview" class="list-ev"></div>
     </div>
     <div id="cerr"></div>
-    <button class="btn pri block" id="create" type="button" style="margin-top:12px">建立房間</button>
+    <button class="btn pri block" id="create" type="button" style="margin-top:16px">建立房間</button>
   </section>
 
-  <section class="card">
-    <h2>加入房間</h2>
+  <section class="card" id="joinCardHome" hidden>
+    <h2>加入朋友的桌子</h2>
+    <p class="muted">跟房主要 6 碼房號，或直接打開他傳的連結。</p>
     <label for="jcode">房號</label>
-    <input type="text" id="jcode" maxlength="6" placeholder="6 個字元，例如 K7Q2M9" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;letter-spacing:.12em">
+    <input type="text" id="jcode" maxlength="6" placeholder="例如 K7Q2M9" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;letter-spacing:.2em;font-size:20px">
     <label for="jname">你的暱稱</label>
     <input type="text" id="jname" maxlength="12" placeholder="例如：小花">
     <label>身分</label>
     <div class="seg" id="roleSeg"><button data-v="player" class="on" type="button">玩家</button><button data-v="viewer" type="button">只看</button></div>
     <div id="jerr"></div>
-    <button class="btn pri block" id="join" type="button" style="margin-top:12px">加入</button>
+    <button class="btn pri block" id="join" type="button" style="margin-top:16px">加入</button>
   </section>
 
   <section class="card">
-    <h3>只是想試試？</h3>
-    <p class="muted">不開房間，直接在這台裝置上問《夜市攤主》的規則，也能看預錄範例。</p>
-    <a class="btn" href="/solo.html">單機試用</a>
+    <div class="row">
+      <div class="grow">
+        <h3 style="margin:0 0 2px">一個人先試試</h3>
+        <p class="muted small" style="margin:0">不開房間，直接問示例遊戲的規則。</p>
+      </div>
+      <a class="btn" href="/solo.html">單機試用</a>
+    </div>
   </section>
 
-  <p class="muted small">房間在最後一次活動 48 小時後自動刪除。只記錄暱稱，不收集真名、電話或位置。示例規則書為本作品自寫。</p>
+  <p class="foot">房間在最後一次活動 48 小時後自動刪除。只記錄暱稱，不收集真名、電話或位置。</p>
 </main>
 
 <script type="module">
@@ -69,12 +111,25 @@ let src = "sample", role = "player";
 
 function seg(id, cb) {
   $(id).addEventListener("click", (e) => {
-    const v = e.target.dataset?.v; if (!v) return;
+    const v = e.target.closest("button")?.dataset?.v; if (!v) return;
     [...$(id).children].forEach((b) => b.classList.toggle("on", b.dataset.v === v));
     cb(v);
   });
 }
-seg("srcSeg", (v) => { src = v; $("pasteBox").hidden = v !== "paste"; });
+function showDoor(v) {
+  [...$("door").children].forEach((b) => { b.classList.toggle("on", b.dataset.v === v); b.setAttribute("aria-selected", b.dataset.v === v); });
+  $("createCard").hidden = v !== "create";
+  $("joinCardHome").hidden = v !== "join";
+}
+seg("door", showDoor);
+function showSrc(v) {
+  src = v;
+  $("sampleNote").hidden = v !== "sample";
+  $("photoBox").hidden = v !== "photo";
+  $("pasteBox").hidden = v === "sample" || (v === "photo" && !$("ctext").value.trim());
+  $("reviewNote").hidden = v !== "photo";
+}
+seg("srcSeg", showSrc);
 seg("roleSeg", (v) => { role = v; });
 
 function color() {
@@ -82,27 +137,117 @@ function color() {
   if (!COLORS.includes(c)) { c = COLORS[Math.floor(Math.random() * COLORS.length)]; store("color", c); }
   return c;
 }
-function showErr(id, msg) { const b = $(id); b.replaceChildren(); if (msg) { const e = el("div", "err", msg); e.style.marginTop = "10px"; b.append(e); } }
+function showErr(id, msg) { const b = $(id); b.replaceChildren(); if (msg) { const e = el("div", "err", msg); e.style.marginTop = "12px"; b.append(e); } }
+const post = (url, body) => fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
-$("ctext").addEventListener("input", () => { $("pcount").textContent = `${$("ctext").value.length.toLocaleString()} / 20,000 字`; });
+function updateCount() { $("pcount").textContent = `${$("ctext").value.length.toLocaleString()} / 20,000 字`; }
+$("ctext").addEventListener("input", updateCount);
 $("pbtn").onclick = async () => {
-  const r = await fetch("/api/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: $("ctext").value }) });
+  const r = await post("/api/preview", { text: $("ctext").value });
   const d = await r.json();
   const box = $("pview"); box.replaceChildren();
   if (!r.ok) { box.append(el("div", "err", d.message)); return; }
-  box.append(el("p", "muted", `切成 ${d.count} 句。每一句都有固定編號，之後的裁定只能引用這些編號：`));
+  box.append(el("p", "muted small", `分成 ${d.count} 句，每一句都有固定編號。之後的裁定只能引用這些編號：`));
   d.sentences.slice(0, 60).forEach((s) => { const row = el("div", "ev"); row.append(el("span", "cid", s.sid), el("span", null, s.text)); box.append(row); });
-  if (d.count > 60) box.append(el("p", "muted", `⋯另外 ${d.count - 60} 句`));
+  if (d.count > 60) box.append(el("p", "muted small", `還有 ${d.count - 60} 句`));
 };
 
+// ---------- 拍照上傳 ----------
+const MAX_PAGES = 8;
+let photos = [];   // { file, url, status: "idle" | "busy" | "ok" | "fail", text, err }
+let ocrRunning = false;
+
+$("photoIn").addEventListener("change", (e) => {
+  const files = [...e.target.files].filter((f) => f.type.startsWith("image/"));
+  const room = MAX_PAGES - photos.length;
+  if (files.length > room) $("ocrMsg").textContent = `最多 ${MAX_PAGES} 頁，多出的 ${files.length - room} 張沒有加入。`;
+  else $("ocrMsg").textContent = "";
+  files.slice(0, room).forEach((file) => photos.push({ file, url: URL.createObjectURL(file), status: "idle" }));
+  e.target.value = "";
+  renderThumbs();
+});
+
+function renderThumbs() {
+  const box = $("thumbs"); box.replaceChildren();
+  photos.forEach((p, i) => {
+    const t = el("div", "thumb" + (p.status === "ok" ? " ok" : p.status === "fail" ? " fail" : p.status === "busy" ? " busy" : ""));
+    const img = el("img"); img.src = p.url; img.alt = `第 ${i + 1} 頁`;
+    t.append(img, el("span", "pg", String(i + 1)));
+    if (!ocrRunning) {
+      const x = el("button", "x", "×"); x.type = "button"; x.setAttribute("aria-label", `移除第 ${i + 1} 頁`);
+      x.onclick = () => { URL.revokeObjectURL(p.url); photos.splice(i, 1); renderThumbs(); };
+      t.append(x);
+    }
+    if (p.status === "busy") t.append(el("span", "st", "辨識中"));
+    if (p.status === "ok") t.append(el("span", "st", "完成"));
+    if (p.status === "fail") t.append(el("span", "st", "失敗"));
+    box.append(t);
+  });
+  const todo = photos.filter((p) => p.status !== "ok").length;
+  $("ocrBtn").hidden = !todo;
+  $("ocrBtn").disabled = ocrRunning;
+  $("ocrBtn").textContent = ocrRunning ? "辨識中⋯" : photos.some((p) => p.status === "fail") ? `重新辨識 ${todo} 頁` : `辨識 ${todo} 頁文字`;
+}
+
+// 縮小照片再上傳：最長邊 2000px，JPEG
+async function compress(file) {
+  let bmp;
+  try { bmp = await createImageBitmap(file); }
+  catch {
+    bmp = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = URL.createObjectURL(file); });
+  }
+  const w = bmp.width, h = bmp.height, k = Math.min(1, 2000 / Math.max(w, h));
+  const c = document.createElement("canvas"); c.width = Math.round(w * k); c.height = Math.round(h * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.85);
+}
+
+$("ocrBtn").onclick = async () => {
+  if (ocrRunning) return;
+  ocrRunning = true;
+  for (const p of photos) {
+    if (p.status === "ok") continue;
+    p.status = "busy"; renderThumbs();
+    const n = photos.indexOf(p) + 1;
+    $("ocrMsg").textContent = `正在辨識第 ${n} 頁（每頁約 10–30 秒）`;
+    try {
+      const r = await post("/api/ocr", { image: await compress(p.file) });
+      const d = await r.json();
+      if (r.ok) { p.status = "ok"; p.text = d.text; p.err = null; }
+      else { p.status = "fail"; p.err = d.message || "辨識失敗"; if (r.status === 429 || d.error === "no_key" || d.error === "no_vision") { ocrRunning = false; break; } }
+    } catch { p.status = "fail"; p.err = "網路連線失敗"; }
+    renderThumbs();
+  }
+  ocrRunning = false;
+  const done = photos.filter((p) => p.status === "ok");
+  const failed = photos.filter((p) => p.status === "fail");
+  if (done.length) {
+    $("ctext").value = done.map((p) => p.text).join("\n");
+    updateCount();
+    $("pasteBox").hidden = false;
+  }
+  const unclear = ($("ctext").value.match(/〔看不清〕/g) || []).length;
+  $("ocrMsg").textContent = failed.length
+    ? `第 ${failed.map((p) => photos.indexOf(p) + 1).join("、")} 頁沒有辨識成功：${failed[0].err}`
+    : done.length ? `${done.length} 頁都辨識好了${unclear ? `，有 ${unclear} 處看不清，請在下面補上` : ""}。` : "";
+  renderThumbs();
+};
+
+// ---------- 建立與加入 ----------
 $("create").onclick = async () => {
   const n = $("cname").value.trim();
   if (!n) return showErr("cerr", "請先填暱稱");
+  if (src !== "sample") {
+    const text = $("ctext").value;
+    if (!text.trim()) return showErr("cerr", src === "photo" ? "請先拍照並辨識文字" : "請先貼上規則文字");
+    const unclear = (text.match(/〔看不清〕/g) || []).length;
+    if (unclear) return showErr("cerr", `還有 ${unclear} 處〔看不清〕，請對照照片補上或刪掉`);
+  }
   store("name", n);
   const body = { device: deviceId(), name: n, color: color(), useSample: src === "sample", title: $("ctitle").value, rulebook: $("ctext").value };
   $("create").disabled = true; $("create").textContent = "建立中⋯";
   try {
-    const r = await fetch("/api/rooms", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const r = await post("/api/rooms", body);
     const d = await r.json();
     if (!r.ok) return showErr("cerr", d.message || "建立失敗");
     location.href = `/room.html?c=${d.code}`;
@@ -117,12 +262,12 @@ $("join").onclick = async () => {
   if (!n) return showErr("jerr", "請先填暱稱");
   store("name", n);
   const r = await fetch(`/api/rooms/${code}`);
-  if (!r.ok) return showErr("jerr", "房間不存在或已過期");
+  if (!r.ok) return showErr("jerr", "找不到這個房間，可能打錯或已經過期");
   location.href = `/room.html?c=${code}&role=${role}`;
 };
 
 const q = new URLSearchParams(location.search).get("c");
-if (q) $("jcode").value = q.toUpperCase();
+if (q) { $("jcode").value = q.toUpperCase(); showDoor("join"); }
 </script>
 </body>
 </html>
