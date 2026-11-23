@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>單機試用｜規則仲裁桌</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%231b2430%22/%3E%3Ctext x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22white%22%3E%E2%9A%96%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="brand" href="/"><span class="logo">⚖</span>規則仲裁桌</a>
+  <span class="sub">單機試用．《夜市攤主》示例</span>
+</div></header>
+
+<main>
+  <section class="card">
+    <div class="seg" id="seg"><button data-m="duel" class="on" type="button">兩方對質</button><button data-m="ask" type="button">直接提問</button></div>
+    <div id="duel">
+      <label for="a">A 的主張</label><input type="text" id="a" maxlength="120" placeholder="例如：擲到 6 可以一直再擲"><div class="cnt" id="ca"></div>
+      <label for="b">B 的主張</label><input type="text" id="b" maxlength="120" placeholder="例如：擲到 6 只能再擲一次"><div class="cnt" id="cb"></div>
+    </div>
+    <div id="ask" hidden>
+      <label for="q">你的問題</label><input type="text" id="q" maxlength="120" placeholder="例如：可以把攤位賣給別人嗎？"><div class="cnt" id="cq"></div>
+    </div>
+    <button class="btn pri block" id="go" type="button" style="margin-top:12px">請裁定</button>
+  </section>
+
+  <section id="out"></section>
+
+  <section class="card"><details><summary>本機房規（<span id="hn">0</span>）</summary>
+    <div id="hl"></div>
+    <label for="hnew">自己新增一條</label><input type="text" id="hnew" maxlength="120">
+    <button class="btn" id="hadd" type="button" style="margin-top:8px">加入房規</button>
+    <p class="muted">房規只存在這台裝置；之後的裁定會把它當成依據，編號 H1、H2⋯</p>
+  </details></section>
+
+  <section class="card"><details><summary>規則書全文</summary><div id="rb" class="muted">載入中⋯</div></details></section>
+  <section class="card"><details id="exd"><summary>預錄範例（不呼叫模型）</summary><div id="ex" class="muted">載入中⋯</div></details></section>
+  <p class="muted small">想讓全桌一起用？回<a href="/">首頁</a>開一張桌子。</p>
+</main>
+
+<script type="module">
+import { $, el, renderVerdict, quoteRows, store, wireCounter } from "/assets/common.js";
+
+let mode = "duel";
+const loadH = () => store("house_rules") || [];
+const saveH = (h) => store("house_rules", h);
+function addH(t) { t = String(t).trim().slice(0, 120); if (!t) return; const h = loadH(); if (h.length < 20) { h.push(t); saveH(h); } renderH(); }
+function renderH() {
+  const h = loadH(); $("hn").textContent = h.length;
+  const box = $("hl"); box.replaceChildren();
+  if (!h.length) { box.append(el("p", "muted", "還沒有房規。")); return; }
+  h.forEach((t, i) => {
+    const r = el("div", "hrow"); r.append(el("span", "cid h", "H" + (i + 1)), el("span", "grow", t));
+    const d = el("button", "btn sm", "刪除"); d.onclick = () => { const x = loadH(); x.splice(i, 1); saveH(x); renderH(); };
+    r.append(d); box.append(r);
+  });
+}
+$("hadd").onclick = () => { addH($("hnew").value); $("hnew").value = ""; };
+
+$("seg").onclick = (e) => {
+  const m = e.target.dataset?.m; if (!m) return; mode = m;
+  [...$("seg").children].forEach((b) => b.classList.toggle("on", b.dataset.m === m));
+  $("duel").hidden = m !== "duel"; $("ask").hidden = m !== "ask";
+};
+wireCounter($("a"), $("ca")); wireCounter($("b"), $("cb")); wireCounter($("q"), $("cq"));
+
+function showErr(d) {
+  const box = $("out"); box.replaceChildren(); box.append(el("div", "err", d.message || "發生錯誤"));
+  if (["quota_daily", "rate_limited", "no_key"].includes(d.error)) {
+    const b = el("button", "btn", "改看預錄範例"); b.style.marginTop = "8px";
+    b.onclick = () => { $("exd").open = true; $("exd").scrollIntoView({ behavior: "smooth" }); };
+    box.append(b);
+  }
+}
+
+function render(d, m) {
+  const box = $("out"); box.replaceChildren();
+  const c = el("div", "card");
+  renderVerdict(c, d, m);
+  if (d.house_rule_options?.length) {
+    c.append(el("div", "subh", "可以定成房規（AI 建議，不是規則）"));
+    d.house_rule_options.forEach((o) => {
+      const r = el("div", "opt"); r.append(el("p", null, o.text), el("small", null, "影響：" + (o.effect || "")));
+      const b = el("button", "btn sm", "記成房規"); b.style.marginTop = "6px";
+      b.onclick = () => { addH(o.text); b.textContent = "已加入房規"; b.disabled = true; };
+      r.append(b); c.append(r);
+    });
+  }
+  box.append(c); box.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+$("go").onclick = async () => {
+  const body = { mode, claim_a: $("a").value, claim_b: $("b").value, question: $("q").value, house_rules: loadH() };
+  $("go").disabled = true; $("go").textContent = "裁定中⋯";
+  try {
+    const r = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const d = await r.json();
+    if (r.ok) render(d, mode); else showErr(d);
+  } catch { showErr({ message: "網路連線失敗，請再試一次" }); }
+  finally { $("go").disabled = false; $("go").textContent = "請裁定"; }
+};
+
+fetch("/api/rulebook").then((r) => r.json()).then((d) => { const b = $("rb"); b.replaceChildren(); quoteRows(b, d.sentences); })
+  .catch(() => { $("rb").textContent = "規則書載入失敗"; });
+
+fetch("/examples.json").then((r) => r.json()).then((list) => {
+  const box = $("ex"); box.replaceChildren();
+  list.forEach((x) => {
+    const b = el("button", "btn", x.label); b.style.cssText = "display:block;width:100%;text-align:left;margin-top:8px";
+    b.onclick = () => render({ ...x.response, source: "recorded" }, x.mode);
+    box.append(b);
+  });
+}).catch(() => { $("ex").textContent = "還沒有預錄範例"; });
+
+renderH();
+</script>
+</body>
+</html>

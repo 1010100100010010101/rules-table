@@ -1,20 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Hello, World!</title>
-	</head>
-	<body>
-		<h1 id="heading"></h1>
-		<p>This page comes from a static asset stored at `public/index.html` as configured in `wrangler.jsonc`.</p>
-		<script>
-			fetch('/message')
-				.then((resp) => resp.text())
-				.then((text) => {
-					const h1 = document.getElementById('heading');
-					h1.textContent = text;
-				});
-		</script>
-	</body>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>規則仲裁桌</title>
+<meta name="description" content="兩人各說一句規則，AI 指出規則書哪一句支持誰；沒寫到的，全桌投票定房規。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%231b2430%22/%3E%3Ctext x=%2250%22 y=%2268%22 font-size=%2256%22 text-anchor=%22middle%22 fill=%22white%22%3E%E2%9A%96%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="brand" href="/"><span class="logo">⚖</span>規則仲裁桌</a>
+</div></header>
+
+<main>
+  <section class="hero">
+    <h1>吵規則，不如問規則書</h1>
+    <p class="muted">兩人各說一句規則，AI 指出規則書哪一句支持誰，原句由程式逐字取出、不會被改寫。規則書沒寫到的，全桌投票定成房規。</p>
+  </section>
+
+  <section class="card">
+    <h2>開一張桌子</h2>
+    <p class="muted">你會成為房主，其他人用手機輸入房號或打開連結加入，不用註冊。</p>
+    <label for="cname">你的暱稱</label>
+    <input type="text" id="cname" maxlength="12" placeholder="例如：阿哲">
+    <label>規則書</label>
+    <div class="seg" id="srcSeg"><button data-v="sample" class="on" type="button">《夜市攤主》示例</button><button data-v="paste" type="button">貼上自己的規則</button></div>
+    <div id="pasteBox" hidden>
+      <label for="ctitle">遊戲名稱</label>
+      <input type="text" id="ctitle" maxlength="30" placeholder="例如：我們的大富翁">
+      <label for="ctext">規則文字</label>
+      <textarea id="ctext" maxlength="20000" placeholder="每行一條，開頭寫條號最好，例如：&#10;4.2 擲出 6 點時，可立即額外擲骰一次。&#10;沒有條號也可以，會依行數自動編號。"></textarea>
+      <div class="row"><span class="muted grow" id="pcount">最多 20,000 字</span><button class="btn sm" id="pbtn" type="button">預覽切句</button></div>
+      <div id="pview" class="list-ev"></div>
+    </div>
+    <div id="cerr"></div>
+    <button class="btn pri block" id="create" type="button" style="margin-top:12px">建立房間</button>
+  </section>
+
+  <section class="card">
+    <h2>加入房間</h2>
+    <label for="jcode">房號</label>
+    <input type="text" id="jcode" maxlength="6" placeholder="6 個字元，例如 K7Q2M9" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase;letter-spacing:.12em">
+    <label for="jname">你的暱稱</label>
+    <input type="text" id="jname" maxlength="12" placeholder="例如：小花">
+    <label>身分</label>
+    <div class="seg" id="roleSeg"><button data-v="player" class="on" type="button">玩家</button><button data-v="viewer" type="button">只看</button></div>
+    <div id="jerr"></div>
+    <button class="btn pri block" id="join" type="button" style="margin-top:12px">加入</button>
+  </section>
+
+  <section class="card">
+    <h3>只是想試試？</h3>
+    <p class="muted">不開房間，直接在這台裝置上問《夜市攤主》的規則，也能看預錄範例。</p>
+    <a class="btn" href="/solo.html">單機試用</a>
+  </section>
+
+  <p class="muted small">房間在最後一次活動 48 小時後自動刪除。只記錄暱稱，不收集真名、電話或位置。示例規則書為本作品自寫。</p>
+</main>
+
+<script type="module">
+import { $, el, deviceId, store, COLORS } from "/assets/common.js";
+
+const name = store("name") || "";
+$("cname").value = name;
+$("jname").value = name;
+let src = "sample", role = "player";
+
+function seg(id, cb) {
+  $(id).addEventListener("click", (e) => {
+    const v = e.target.dataset?.v; if (!v) return;
+    [...$(id).children].forEach((b) => b.classList.toggle("on", b.dataset.v === v));
+    cb(v);
+  });
+}
+seg("srcSeg", (v) => { src = v; $("pasteBox").hidden = v !== "paste"; });
+seg("roleSeg", (v) => { role = v; });
+
+function color() {
+  let c = store("color");
+  if (!COLORS.includes(c)) { c = COLORS[Math.floor(Math.random() * COLORS.length)]; store("color", c); }
+  return c;
+}
+function showErr(id, msg) { const b = $(id); b.replaceChildren(); if (msg) { const e = el("div", "err", msg); e.style.marginTop = "10px"; b.append(e); } }
+
+$("ctext").addEventListener("input", () => { $("pcount").textContent = `${$("ctext").value.length.toLocaleString()} / 20,000 字`; });
+$("pbtn").onclick = async () => {
+  const r = await fetch("/api/preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: $("ctext").value }) });
+  const d = await r.json();
+  const box = $("pview"); box.replaceChildren();
+  if (!r.ok) { box.append(el("div", "err", d.message)); return; }
+  box.append(el("p", "muted", `切成 ${d.count} 句。每一句都有固定編號，之後的裁定只能引用這些編號：`));
+  d.sentences.slice(0, 60).forEach((s) => { const row = el("div", "ev"); row.append(el("span", "cid", s.sid), el("span", null, s.text)); box.append(row); });
+  if (d.count > 60) box.append(el("p", "muted", `⋯另外 ${d.count - 60} 句`));
+};
+
+$("create").onclick = async () => {
+  const n = $("cname").value.trim();
+  if (!n) return showErr("cerr", "請先填暱稱");
+  store("name", n);
+  const body = { device: deviceId(), name: n, color: color(), useSample: src === "sample", title: $("ctitle").value, rulebook: $("ctext").value };
+  $("create").disabled = true; $("create").textContent = "建立中⋯";
+  try {
+    const r = await fetch("/api/rooms", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const d = await r.json();
+    if (!r.ok) return showErr("cerr", d.message || "建立失敗");
+    location.href = `/room.html?c=${d.code}`;
+  } catch { showErr("cerr", "網路連線失敗，請再試一次"); }
+  finally { $("create").disabled = false; $("create").textContent = "建立房間"; }
+};
+
+$("join").onclick = async () => {
+  const code = $("jcode").value.trim().toUpperCase();
+  const n = $("jname").value.trim();
+  if (!/^[A-Z0-9]{6}$/.test(code)) return showErr("jerr", "房號是 6 個字元");
+  if (!n) return showErr("jerr", "請先填暱稱");
+  store("name", n);
+  const r = await fetch(`/api/rooms/${code}`);
+  if (!r.ok) return showErr("jerr", "房間不存在或已過期");
+  location.href = `/room.html?c=${code}&role=${role}`;
+};
+
+const q = new URLSearchParams(location.search).get("c");
+if (q) $("jcode").value = q.toUpperCase();
+</script>
+</body>
 </html>

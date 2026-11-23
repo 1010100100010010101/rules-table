@@ -1,4 +1,4 @@
-const KINDS = ["explicit", "inferred", "conflict", "not_covered", "unclear", "off_topic"];
+export const KINDS = ["explicit", "inferred", "conflict", "not_covered", "unclear", "off_topic"];
 
 // 從模型回傳的文字中取出 JSON（容忍它多加了程式碼框或說明）
 export function parseJson(text: string): any {
@@ -13,7 +13,7 @@ export function parseJson(text: string): any {
   }
 }
 
-// 回傳錯誤清單；空陣列代表全部通過
+// 回傳錯誤清單；空陣列代表全部通過。錯誤以「格式／編號／類型」開頭分類。
 export function validateVerdict(v: any, ids: Set<string>): string[] {
   if (!v || typeof v !== "object") return ["格式：回傳不是 JSON 物件"];
   const errs: string[] = [];

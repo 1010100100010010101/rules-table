@@ -1,0 +1,19 @@
+[
+  {
+    "label": "擲到 6 能不能一直再擲？（明文）",
+    "mode": "duel",
+    "response": {
+      "kind": "explicit",
+      "verdict": "B",
+      "result": "擲出 6 點可立即額外擲骰一次；但額外擲骰的結果不會再觸發，因此不能一直再擲。",
+      "evidence_quotes": [
+        { "sid": "4.2-1", "text": "擲出 6 點時，可立即額外擲骰一次。" },
+        { "sid": "4.2-2", "text": "額外擲骰的結果不會再觸發本條效果。" }
+      ],
+      "related_quotes": [],
+      "house_rule_options": [],
+      "checks": { "schema": true, "ids_exist": true, "kind_rules": true },
+      "needs_review": false
+    }
+  }
+]
