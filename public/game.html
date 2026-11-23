@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>規則仲裁桌</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Crect width=%22100%22 height=%22100%22 rx=%2226%22 fill=%22%23f5b83d%22/%3E%3Cpath d=%22M50 18v62M32 80h36M24 34h52M24 34l-12 24a12 12 0 0 0 24 0zM76 34l-12 24a12 12 0 0 0 24 0z%22 fill=%22none%22 stroke=%22%231c2433%22 stroke-width=%227%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<meta name="theme-color" content="#233a5e">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <a class="brand" href="/"><span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v17M7 20h10M5 7h14M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/></svg></span><span data-i18n="appName">規則仲裁桌</span></a>
+  <span class="spacer"></span>
+  <div class="langs" id="langs" role="group" aria-label="Language"></div>
+</div></header>
+
+<div class="g-hero" id="hero" style="background:var(--board)">
+  <div class="g-icon" id="gIcon">🎲</div>
+  <h1 class="g-title" id="gTitle"></h1>
+  <div class="g-sum" id="gSum"></div>
+</div>
+
+<main class="g-main">
+  <section class="card g-stats">
+    <div class="g-stat"><span class="g-si">👥</span><span class="g-sv" id="sPlayers"></span><span class="g-sl" data-i18n="playersLbl"></span></div>
+    <div class="g-stat"><span class="g-si">⏱️</span><span class="g-sv" id="sTime"></span><span class="g-sl" data-i18n="timeLbl"></span></div>
+    <div class="g-stat"><span class="g-si">🎂</span><span class="g-sv" id="sAge"></span><span class="g-sl" data-i18n="ageLbl"></span></div>
+    <div class="g-stat"><span class="g-dots" id="sDots"></span><span class="g-sv" id="sWeight"></span><span class="g-sl" data-i18n="weightLbl"></span></div>
+  </section>
+
+  <section class="card" id="introCard"><h2 class="g-h">📖 <span data-i18n="introTitle"></span></h2><p class="g-p" id="gIntro"></p></section>
+  <section class="card g-goal" id="goalCard"><h2 class="g-h">🏆 <span data-i18n="goalTitle"></span></h2><p class="g-p" id="gGoal"></p></section>
+  <section class="card"><h2 class="g-h">🧰 <span data-i18n="componentsTitle"></span></h2><div class="g-comps" id="gComps"></div></section>
+  <section class="card"><h2 class="g-h">🔁 <span data-i18n="flowTitle"></span></h2><div class="g-flow" id="gFlow"></div></section>
+  <section class="card"><details><summary id="rulesSum"></summary><div id="rules" class="list-ev"></div></details></section>
+
+  <p class="muted small" data-i18n="notOfficial"></p>
+  <a class="btn pri block" id="useBtn" href="/" data-i18n="useThisGame"></a>
+  <a class="btn block" id="soloBtn" href="/solo.html" data-i18n="askSolo" style="margin-top:10px"></a>
+</main>
+
+<script type="module">
+import { $, el, quoteRows } from "/assets/common.js";
+import { dict, fmt, getLang, applyI18n, langSwitch } from "/assets/i18n.js";
+
+const id = new URLSearchParams(location.search).get("id") || "night-market";
+let lang = getLang(), t = dict(lang);
+$("useBtn").href = `/?preset=${encodeURIComponent(id)}`;
+$("soloBtn").href = `/solo.html?game=${encodeURIComponent(id)}`;
+
+async function load() {
+  applyI18n(t);
+  let list = [], book = null;
+  try { list = await (await fetch(`/api/presets?lang=${lang}`)).json(); } catch {}
+  try { const r = await fetch(`/api/rulebook?game=${encodeURIComponent(id)}&lang=${lang}`); if (r.ok) book = await r.json(); } catch {}
+  const g = Array.isArray(list) ? list.find((x) => x.id === id) : null;
+  if (!g) { $("gTitle").textContent = t.presetsFail; return; }
+
+  document.title = fmt(t.tabRoomTitle, { title: g.title });
+  $("hero").style.background = g.color;
+  $("gIcon").textContent = g.icon;
+  $("gTitle").textContent = g.title;
+  $("gSum").textContent = g.summary;
+  $("sPlayers").textContent = g.players;
+  $("sTime").textContent = g.time ? fmt(t.minutes, { n: g.time }) : "—";
+  $("sAge").textContent = g.age || "—";
+  $("sWeight").textContent = t["weight" + (g.weight || 1)];
+  const dots = $("sDots"); dots.replaceChildren();
+  for (let i = 1; i <= 3; i++) { const d = el("span", "g-dot"); if (i <= g.weight) d.style.background = g.color; dots.append(d); }
+  $("gIntro").textContent = g.intro; $("introCard").hidden = !g.intro;
+  $("gGoal").textContent = g.goal; $("goalCard").hidden = !g.goal;
+
+  const comps = $("gComps"); comps.replaceChildren();
+  for (const c of g.components) { const b = el("div", "g-comp"); b.append(el("span", "g-ci", c.icon), el("span", "g-cl", c.label)); comps.append(b); }
+
+  const flow = $("gFlow"); flow.replaceChildren();
+  g.flow.forEach((s, i) => {
+    const row = el("div", "g-step");
+    const n = el("span", "g-sn", String(i + 1)); n.style.background = g.color;
+    row.append(n, el("span", "g-sicon", s.icon), el("span", "g-slabel", s.label));
+    flow.append(row);
+    if (i < g.flow.length - 1) flow.append(el("div", "g-arrow", "↓"));
+  });
+
+  $("rulesSum").textContent = fmt(t.fullRules, { n: book?.count ?? 0 });
+  const rb = $("rules"); rb.replaceChildren(); if (book) quoteRows(rb, book.sentences);
+}
+
+langSwitch($("langs"), (l) => { lang = l; t = dict(l); load(); });
+load();
+</script>
+</body>
+</html>

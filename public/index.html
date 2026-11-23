@@ -23,13 +23,13 @@
   <section class="hero">
     <h1 data-i18n="heroTitle">吵規則，不如翻規則書</h1>
     <p data-i18n="heroBody"></p>
-    <div class="scene">
-      <div class="say"><span class="av" style="background:#2b6cb0" id="demoAvA">哲</span><p data-i18n="demoSayA"></p></div>
-      <div class="say r"><span class="av" style="background:#b83280" id="demoAvB">花</span><p data-i18n="demoSayB"></p></div>
-      <div class="verdict-demo">
-        <span class="kind k-explicit" data-i18n="kind.explicit"></span>
-        <div class="vm" data-i18n="demoVerdict"></div>
-        <div class="ev"><span class="cid">4.2-2</span><span data-i18n="demoQuote"></span></div>
+    <!-- 介紹影片：CSS 動畫做成，可播放、暫停、重播 -->
+    <div class="vid">
+      <div class="stage paused" id="stage" role="button" tabindex="0"></div>
+      <div class="v-ctrl">
+        <button class="v-btn" id="vbtn" type="button" aria-label="Play">▶</button>
+        <div class="v-prog"><i id="vprog" style="width:0"></i></div>
+        <span class="v-time" id="vtime">0:00 / 0:21</span>
       </div>
     </div>
   </section>
@@ -156,9 +156,7 @@ function applyLang(l) {
   lang = l; t = dict(l);
   applyI18n(t);
   document.title = t.appName;
-  const first = (s) => { const n = String(s); return n.length >= 2 && "阿小老大".includes(n[0]) ? n[1] : n[0]; };
-  $("demoAvA").textContent = first(t.demoNameA);
-  $("demoAvB").textContent = first(t.demoNameB);
+  renderStage();
   $("pview").replaceChildren();
   showErr("cerr", ""); showErr("jerr", "");
   updateCount();
@@ -182,13 +180,105 @@ async function loadPresets() {
 function renderPresets() {
   const box = $("presets"); box.replaceChildren();
   for (const p of presets) {
-    const b = el("button", "preset" + (p.id === preset ? " on" : "")); b.type = "button";
-    const top = el("div", "pt"); top.append(el("b", null, p.title), el("span", "pn", fmt(t.playersN, { n: p.players })));
-    b.append(top, el("div", "ps", p.summary));
+    const w = p.weight || 1;
+    const b = el("div", "preset" + (p.id === preset ? " on" : ""));
+    b.setAttribute("role", "button"); b.tabIndex = 0;
+    const top = el("div", "pt");
+    const icon = el("span", "pi", p.icon); icon.style.background = p.color;
+    const mid = el("div", "grow");
+    const meta = el("div", "pm");
+    meta.append(el("span", null, `👥 ${p.players}`));
+    if (p.time) meta.append(el("span", null, `⏱️ ${fmt(t.minutes, { n: p.time })}`));
+    meta.append(el("span", null, "●●●".slice(0, w) + "○○○".slice(0, 3 - w) + " " + t["weight" + w]));
+    mid.append(el("b", null, p.title), meta);
+    top.append(icon, mid);
+    if (p.id === preset) top.append(el("span", "ck2", "✓"));
+    const more = el("a", "more", t.seeIntro); more.href = `/game.html?id=${p.id}`;
+    more.onclick = (e) => e.stopPropagation();
+    b.append(top, el("div", "ps", p.summary), more);
     b.onclick = () => { preset = p.id; renderPresets(); };
+    b.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); b.click(); } };
     box.append(b);
   }
 }
+
+// ---------- 介紹影片：6 段動畫，每段 3.5 秒 ----------
+const SCENE_MS = 3500, TOTAL = SCENE_MS * 6;
+const vid = { started: false, playing: false, ended: false, scene: -1, elapsed: 0, last: 0, timer: null };
+const sec = (ms) => `0:${String(Math.floor(ms / 1000)).padStart(2, "0")}`;
+function sceneEl(n) {
+  const sc = el("div", "sc");
+  const logo = (cls = "") => el("div", "v-logo vpop " + cls, "⚖️");
+  const avA = el("span", "av", [...t.demoNameA][[..."阿小老大"].includes(t.demoNameA[0]) ? 1 : 0]); avA.style.background = "#2b6cb0";
+  const avB = el("span", "av", [...t.demoNameB][[..."阿小老大"].includes(t.demoNameB[0]) ? 1 : 0]); avB.style.background = "#b83280";
+  if (n === 0) {
+    const faces = el("div", "v-faces"); faces.append(el("span", "shake d1", "😤"), el("span", "shake d2", "😠"));
+    sc.append(logo(), el("div", "v-name vpop d1", t.appName), faces);
+  } else if (n === 1) {
+    const a = el("div", "v-say in-l"); a.append(avA, el("div", "v-bub", t.demoSayA));
+    const b = el("div", "v-say r in-r d2"); b.append(avB, el("div", "v-bub", t.demoSayB));
+    sc.append(a, b);
+  } else if (n === 2) {
+    const book = el("div", "v-book in-up");
+    const hl = el("div", "v-hl"); hl.append(el("span", "cid", "4.2-2"), el("span", null, t.demoQuote));
+    book.append(el("div", "v-book-h", `📖 ${t.vRulebook}`), el("div", "v-line"), hl, el("div", "v-line s"));
+    const v = el("div", "v-verdict vdrop d3"); v.append(el("span", "kind k-explicit", t.kind.explicit), el("div", "v-vm", t.demoVerdict));
+    sc.append(book, v);
+  } else if (n === 3) {
+    const vote = el("div", "v-vote in-up");
+    const opt = (label, cls) => { const o = el("div", "v-opt"); const bar = el("div", "v-bar"); bar.append(el("div", "v-fill " + cls)); o.append(el("span", null, label), bar); return o; };
+    vote.append(el("div", "v-q", `🗳️ ${t.vVoteQ}`), opt(t.vVoteA, "a"), opt(t.vVoteB, "b"), el("div", "v-pass vpop d3", t.vPassed));
+    sc.append(vote);
+  } else if (n === 4) {
+    const feats = el("div", "v-feats");
+    [["📷", t.featPhoto, ""], ["🌐", t.featTranslate, "d1"], ["🎲", t.featPresets, "d2"], ["🔤", t.featLangs, "d3"]].forEach(([i, l, d]) => {
+      const f = el("div", "v-feat vpop " + d); f.append(el("span", "v-fi", i), el("span", null, l)); feats.append(f);
+    });
+    sc.append(feats);
+  } else {
+    sc.append(logo(), el("div", "v-cta vpop d1", t.createBtn));
+  }
+  return sc;
+}
+function renderStage() {
+  const st = $("stage"); st.replaceChildren();
+  st.classList.toggle("paused", !vid.playing);
+  st.setAttribute("aria-label", t.videoTitle);
+  if (!vid.started) {
+    const p = el("div", "poster"); p.append(el("div", "v-logo", "⚖️"), el("div", "poster-t", t.videoTitle), el("div", "play-big", "▶"));
+    st.append(p);
+  } else {
+    if (vid.scene >= 0) st.append(sceneEl(vid.scene), el("div", "cap", t["v" + (vid.scene + 1)]));
+    if (vid.ended) { const e = el("div", "ended"); e.append(el("div", "play-big", "↻")); st.append(e); }
+  }
+  $("vbtn").textContent = vid.ended ? "↻" : vid.playing ? "❚❚" : "▶";
+  $("vbtn").setAttribute("aria-label", vid.ended ? t.replay : vid.playing ? t.pause : t.play);
+}
+function tick() {
+  const now = performance.now();
+  if (vid.playing) vid.elapsed += now - vid.last;
+  vid.last = now;
+  if (vid.elapsed >= TOTAL) {
+    clearInterval(vid.timer); vid.playing = false; vid.ended = true; vid.elapsed = TOTAL;
+    $("vprog").style.width = "100%"; $("vtime").textContent = `${sec(TOTAL)} / ${sec(TOTAL)}`;
+    renderStage(); return;
+  }
+  const scene = Math.floor(vid.elapsed / SCENE_MS);
+  $("vprog").style.width = `${(vid.elapsed / TOTAL) * 100}%`;
+  $("vtime").textContent = `${sec(vid.elapsed)} / ${sec(TOTAL)}`;
+  if (scene !== vid.scene) { vid.scene = scene; renderStage(); }
+}
+function play() { vid.playing = true; vid.last = performance.now(); clearInterval(vid.timer); vid.timer = setInterval(tick, 100); $("stage").classList.remove("paused"); renderBtn(); }
+function pause() { vid.playing = false; clearInterval(vid.timer); $("stage").classList.add("paused"); renderBtn(); }
+function renderBtn() { $("vbtn").textContent = vid.ended ? "↻" : vid.playing ? "❚❚" : "▶"; $("vbtn").setAttribute("aria-label", vid.playing ? t.pause : t.play); }
+function toggleVideo() {
+  if (!vid.started || vid.ended) { Object.assign(vid, { started: true, ended: false, elapsed: 0, scene: -1 }); play(); tick(); return; }
+  vid.playing ? pause() : play();
+}
+$("stage").onclick = toggleVideo;
+$("stage").onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleVideo(); } };
+$("vbtn").onclick = toggleVideo;
+document.addEventListener("visibilitychange", () => { if (document.hidden && vid.playing) pause(); });
 
 // ---------- 貼上文字與預覽 ----------
 function updateCount() { $("pcount").textContent = fmt(t.charCount, { n: $("ctext").value.length }); }
@@ -392,6 +482,9 @@ $("join").onclick = async () => {
   location.href = `/room.html?c=${code}&role=${role}`;
 };
 
+// 從遊戲介紹頁按「用這款開房」過來：?preset=遊戲
+const qp = new URLSearchParams(location.search).get("preset");
+if (qp) preset = qp;
 const q = new URLSearchParams(location.search).get("c");
 if (q) { $("jcode").value = q.toUpperCase(); showDoor("join"); }
 applyLang(lang);

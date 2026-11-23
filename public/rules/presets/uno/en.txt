@@ -1,0 +1,24 @@
+1.1 These rules summarize common play; they are not the official rulebook. 2 to 10 players.
+1.2 The first player to get rid of all their cards wins the round.
+2.1 The deck has 108 cards in four colors (red, yellow, green, blue). Each color has number cards 0 to 9 plus Skip, Reverse, and Draw Two action cards.
+2.2 There are also 4 black Wild cards and 4 Wild Draw Four cards.
+2.3 Shuffle and deal 7 cards to each player. The rest go face down as the draw pile.
+2.4 Turn over the top card of the draw pile to start the discard pile. If it is a Wild Draw Four, put it back and turn over another.
+2.5 The player to the dealer's left goes first, and play continues clockwise.
+3.1 On your turn, play a card that matches the top card of the discard pile by color, number, or symbol.
+3.2 You may instead play a Wild card and choose the next color.
+3.3 If you can't or don't want to play, draw one card. If that card can be played, you may play it right away; otherwise play passes to the next player.
+3.4 When the draw pile runs out, keep the top discard and shuffle the rest of the discard pile into a new draw pile.
+4.1 Skip: the next player loses their turn.
+4.2 Reverse: the direction of play reverses. With two players, Reverse works like Skip.
+4.3 Draw Two: the next player draws 2 cards and loses their turn.
+4.4 Wild: the player who plays it chooses the color.
+4.5 Wild Draw Four: the player who plays it chooses the color, and the next player draws 4 cards and loses their turn.
+4.6 You may play a Wild Draw Four only if you have no card matching the color of the top discard.
+4.7 A player hit by a Wild Draw Four may challenge it. The player who played it shows their hand to the challenger; if it was played illegally, that player draws 4 instead; if it was legal, the challenger draws 6.
+4.8 These rules do not allow stacking Draw Two or Draw Four cards onto the next player; if your table wants stacking, make it a house rule before you start.
+5.1 When you play your second-to-last card and have one card left, you must say "UNO."
+5.2 If you don't say "UNO" and another player catches you before the next player plays, you draw 2 cards as a penalty.
+6.1 The round ends when someone plays their last card. The cards left in the other players' hands are scored for the winner.
+6.2 Scoring: number cards are worth their face value; Skip, Reverse, and Draw Two are 20 points each; Wild and Wild Draw Four are 50 points each.
+6.3 The first player to reach 500 points wins the game. You can also play a single round, where the first player out wins.

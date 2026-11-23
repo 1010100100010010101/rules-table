@@ -1,0 +1,27 @@
+1.1 These rules summarize a common 12-player setup; they are not official rules. A moderator who does not play runs the game.
+1.2 Players are split into the village team and the werewolf team. The village team includes villagers and power roles.
+1.3 The village team wins when every werewolf has been exiled or killed.
+1.4 The werewolves win when every villager is out, or every power role is out.
+2.1 Roles for 12 players: 4 werewolves, 4 villagers, and 1 each of Seer, Witch, Hunter, and Guard.
+2.2 The moderator shuffles the role cards and each player draws one, looking at it privately.
+2.3 You may not show your role card to anyone while you are still in the game.
+3.1 The game alternates between night and day, starting with the first night.
+3.2 At night everyone closes their eyes. The moderator wakes each role with a night power in turn; that player opens their eyes, acts with gestures, and closes their eyes again.
+3.3 Night order: Guard, werewolves, Seer, Witch.
+4.1 On the first night the werewolves see who their teammates are. Each night the werewolves together choose one player to kill; if they disagree, the majority decides.
+4.2 Each night the Seer checks one player, and the moderator signals whether that player is a werewolf or on the village team.
+4.3 The Witch has one healing potion and one poison, each usable once.
+4.4 The moderator shows the Witch who the werewolves killed that night; the Witch may use the healing potion to save that player.
+4.5 The Witch may use the poison to kill one player. She may not use both potions on the same night.
+4.6 The Witch may save herself only on the first night.
+4.7 Each night the Guard protects one player, who cannot be killed by the werewolves that night. The Guard may not protect the same player two nights in a row.
+4.8 If the same player is both protected by the Guard and saved by the Witch on the same night, that player still dies.
+4.9 When the Hunter is out, they may shoot one player, who is also out. A Hunter killed by the Witch's poison may not shoot.
+5.1 At dawn the moderator announces who died during the night, without saying how.
+5.2 Players who die on the first night may give last words; players who die on later nights may not.
+5.3 During the day, each living player speaks once, in turn.
+5.4 After everyone has spoken, players vote to exile one player. The player with the most votes is out and gives last words.
+5.5 If the top vote is tied, the tied players each speak again and everyone else votes again; if it is still tied, no one is exiled.
+5.6 A werewolf may reveal themselves during the day. That werewolf is out, the day ends immediately, and there is no vote that day.
+6.1 Players who are out may not speak or give hints to living players by expression or gesture.
+6.2 The moderator checks for a win after each exile and at the end of each night.

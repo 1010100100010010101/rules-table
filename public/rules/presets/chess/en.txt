@@ -1,0 +1,28 @@
+1.1 Chess is played by two players, White and Black. White moves first.
+1.2 You win by checkmating the opponent's king.
+2.1 The board has 64 squares in an 8×8 grid of alternating colors. Set it up so each player has a light square in the right-hand corner.
+2.2 Each side has 16 pieces: 1 king, 1 queen, 2 rooks, 2 bishops, 2 knights, and 8 pawns.
+2.3 The back rank, from left to right from White's side: rook, knight, bishop, queen, king, bishop, knight, rook. Each queen starts on a square of her own color.
+2.4 The pawns fill the second rank.
+3.1 Players take turns moving one of their own pieces.
+3.2 Moving onto a square occupied by an opposing piece captures it. You may not move onto a square occupied by your own piece.
+3.3 Except for the knight, pieces cannot jump over other pieces.
+4.1 The king moves one square in any direction.
+4.2 The queen moves any number of squares in a straight line: horizontally, vertically, or diagonally.
+4.3 The rook moves any number of squares horizontally or vertically.
+4.4 The bishop moves any number of squares diagonally.
+4.5 The knight moves in an L shape: two squares straight, then one square at a right angle. It may jump over other pieces.
+4.6 A pawn moves one square forward. On its first move it may move two squares forward.
+4.7 A pawn captures one square diagonally forward; it cannot capture straight ahead.
+5.1 Castling: the king moves two squares toward one of its rooks, and that rook jumps to the square the king crossed.
+5.2 You may castle only if neither the king nor that rook has moved, no pieces are between them, the king is not in check, and the king does not pass through or land on an attacked square.
+5.3 En passant: if an opposing pawn moves two squares from its starting square and lands beside your pawn, your pawn may capture it on the very next move by moving diagonally to the square it skipped. If you don't do it right away, the chance is gone.
+5.4 Promotion: a pawn that reaches the last rank must be replaced by a queen, rook, bishop, or knight of the same color, usually a queen.
+6.1 A king under attack is in check. A player in check must get out of check on that move.
+6.2 You may not make a move that leaves your own king in check.
+6.3 If you are in check and cannot get out of it, you are checkmated and lose.
+6.4 If you are not in check but have no legal move, it is stalemate, and the game is a draw.
+6.5 If neither side can possibly checkmate (for example, only the two kings remain), the game is a draw.
+6.6 If the same position occurs for the third time with the same player to move, a player may claim a draw.
+6.7 If 50 moves in a row pass for each side with no capture and no pawn move, a player may claim a draw.
+6.8 Players may agree to a draw, and either player may resign.

@@ -54,7 +54,7 @@ import { dict, fmt, getLang, applyI18n, langSwitch } from "/assets/i18n.js";
 
 const SAMPLE_ID = "night-market";
 let lang = getLang(), t = dict(lang);
-let mode = "duel", game = SAMPLE_ID, examples = [];
+let mode = "duel", game = new URLSearchParams(location.search).get("game") || SAMPLE_ID, examples = [];
 const loadH = () => store("house_rules") || [];
 const saveH = (h) => store("house_rules", h);
 function addH(text) { text = String(text).trim().slice(0, 120); if (!text) return; const h = loadH(); if (h.length < 20) { h.push(text); saveH(h); } renderH(); }

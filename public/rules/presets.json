@@ -1,39 +1,216 @@
 [
   {
-    "id": "night-market",
-    "players": "2–4",
-    "sample": true,
+    "id": "night-market", "icon": "🏮", "color": "#c2410c", "players": "2–4", "time": "20–30", "age": "8+", "weight": 1, "sample": true,
     "title": { "zh-Hant": "《夜市攤主》示例", "zh-Hans": "《夜市摊主》示例", "en": "Night Market Vendors (sample)" },
-    "summary": { "zh-Hant": "我們自己寫的示例規則，19 句，適合先試玩。", "zh-Hans": "我们自己写的示例规则，19 句，适合先试玩。", "en": "A short sample game we wrote, 19 sentences. Good for a first try." }
+    "summary": { "zh-Hant": "我們自己寫的示例規則，19 句，適合先試玩。", "zh-Hans": "我们自己写的示例规则，19 句，适合先试玩。", "en": "A short sample game we wrote, 19 sentences. Good for a first try." },
+    "intro": {
+      "zh-Hant": "這是我們為了示範規則仲裁桌而寫的小遊戲：大家推著攤車逛夜市、開攤位、收租金。規則很短，正好拿來試試 AI 怎麼引用原句。",
+      "zh-Hans": "这是我们为了演示规则仲裁桌而写的小游戏：大家推着摊车逛夜市、开摊位、收租金。规则很短，正好拿来试试 AI 怎么引用原句。",
+      "en": "A tiny game we wrote to demo Rules Referee: push your cart around a night market, open stalls, and collect rent. The rules are short, which makes it a good way to see how the AI quotes sentences."
+    },
+    "goal": { "zh-Hant": "先有人存到 30 枚金幣，該輪結束時金幣最多的人獲勝。", "zh-Hans": "先有人存到 30 枚金币，该轮结束时金币最多的人获胜。", "en": "When someone reaches 30 coins, the round finishes and the richest player wins." },
+    "components": [
+      { "icon": "🛒", "label": { "zh-Hant": "推車棋子", "zh-Hans": "推车棋子", "en": "Cart pawns" } },
+      { "icon": "🪙", "label": { "zh-Hant": "金幣", "zh-Hans": "金币", "en": "Coins" } },
+      { "icon": "🏪", "label": { "zh-Hant": "攤位卡", "zh-Hans": "摊位卡", "en": "Stall cards" } },
+      { "icon": "🎴", "label": { "zh-Hant": "事件卡", "zh-Hans": "事件卡", "en": "Event cards" } },
+      { "icon": "🎲", "label": { "zh-Hant": "骰子 1 顆", "zh-Hans": "骰子 1 颗", "en": "1 die" } }
+    ],
+    "flow": [
+      { "icon": "🎲", "label": { "zh-Hant": "擲骰移動", "zh-Hans": "掷骰移动", "en": "Roll and move" } },
+      { "icon": "📍", "label": { "zh-Hant": "執行格子效果", "zh-Hans": "执行格子效果", "en": "Resolve the space" } },
+      { "icon": "🏪", "label": { "zh-Hant": "可以開攤位", "zh-Hans": "可以开摊位", "en": "Open a stall (optional)" } },
+      { "icon": "👉", "label": { "zh-Hant": "換左手邊的人", "zh-Hans": "换左手边的人", "en": "Next player" } }
+    ]
   },
   {
-    "id": "monopoly",
-    "players": "2–6",
+    "id": "monopoly", "icon": "🎩", "color": "#2e7d55", "players": "2–6", "time": "60–180", "age": "8+", "weight": 2,
     "title": { "zh-Hant": "大富翁", "zh-Hans": "大富翁", "en": "Monopoly" },
-    "summary": { "zh-Hant": "買地、收租、蓋房子，讓對手破產。常見玩法整理，非官方說明書。", "zh-Hans": "买地、收租、盖房子，让对手破产。常见玩法整理，非官方说明书。", "en": "Buy property, collect rent, build houses, bankrupt your rivals. A summary of common play, not the official rulebook." }
+    "summary": { "zh-Hant": "買地、收租、蓋房子，讓對手破產。常見玩法整理，非官方說明書。", "zh-Hans": "买地、收租、盖房子，让对手破产。常见玩法整理，非官方说明书。", "en": "Buy property, collect rent, build houses, bankrupt your rivals. A summary of common play, not the official rulebook." },
+    "intro": {
+      "zh-Hant": "源自 1904 年 Lizzie Magie 設計的《地主遊戲》，原本是想讓人看見壟斷的壞處。1935 年起由 Parker Brothers 發行而風行全球，在華語地區多半叫「大富翁」。",
+      "zh-Hans": "源自 1904 年 Lizzie Magie 设计的《地主游戏》，原本是想让人看见垄断的坏处。1935 年起由 Parker Brothers 发行而风行全球，在华语地区多半叫“大富翁”。",
+      "en": "It grew out of The Landlord's Game, designed by Lizzie Magie in 1904 to show the harms of monopolies. Parker Brothers began publishing it in 1935, and it spread around the world."
+    },
+    "goal": { "zh-Hant": "讓其他玩家全部破產，最後一個留下的人獲勝。", "zh-Hans": "让其他玩家全部破产，最后一个留下的人获胜。", "en": "Bankrupt everyone else; the last player standing wins." },
+    "components": [
+      { "icon": "🗺️", "label": { "zh-Hant": "棋盤", "zh-Hans": "棋盘", "en": "Board" } },
+      { "icon": "🎩", "label": { "zh-Hant": "棋子", "zh-Hans": "棋子", "en": "Tokens" } },
+      { "icon": "💵", "label": { "zh-Hant": "紙鈔", "zh-Hans": "纸钞", "en": "Money" } },
+      { "icon": "📜", "label": { "zh-Hant": "地契", "zh-Hans": "地契", "en": "Title deeds" } },
+      { "icon": "🏠", "label": { "zh-Hant": "房子與旅館", "zh-Hans": "房子与酒店", "en": "Houses and hotels" } },
+      { "icon": "❓", "label": { "zh-Hant": "機會與命運卡", "zh-Hans": "机会与命运卡", "en": "Chance and Community Chest" } },
+      { "icon": "🎲", "label": { "zh-Hant": "骰子 2 顆", "zh-Hans": "骰子 2 颗", "en": "2 dice" } }
+    ],
+    "flow": [
+      { "icon": "🎲", "label": { "zh-Hant": "擲兩顆骰子", "zh-Hans": "掷两颗骰子", "en": "Roll two dice" } },
+      { "icon": "🚶", "label": { "zh-Hant": "依點數前進", "zh-Hans": "按点数前进", "en": "Move" } },
+      { "icon": "💰", "label": { "zh-Hant": "買地或付租金", "zh-Hans": "买地或付租金", "en": "Buy or pay rent" } },
+      { "icon": "🏠", "label": { "zh-Hant": "蓋房、交易", "zh-Hans": "盖房、交易", "en": "Build and trade" } }
+    ]
   },
   {
-    "id": "xiangqi",
-    "players": "2",
-    "title": { "zh-Hant": "中國象棋", "zh-Hans": "中国象棋", "en": "Xiangqi (Chinese chess)" },
-    "summary": { "zh-Hant": "楚河漢界，將死對方的將帥。", "zh-Hans": "楚河汉界，将死对方的将帅。", "en": "Checkmate the opposing General across the River." }
+    "id": "werewolf", "icon": "🐺", "color": "#7b4cd6", "players": "8–16", "time": "30–60", "age": "12+", "weight": 2,
+    "title": { "zh-Hant": "狼人殺", "zh-Hans": "狼人杀", "en": "Werewolf" },
+    "summary": { "zh-Hant": "夜裡狼人殺人，白天全村投票找出狼人。12 人局常見玩法。", "zh-Hans": "夜里狼人杀人，白天全村投票找出狼人。12 人局常见玩法。", "en": "Werewolves strike at night; the village votes them out by day. A common 12-player setup." },
+    "intro": {
+      "zh-Hant": "前身是 1986 年莫斯科大學的心理學課堂遊戲《黑手黨》，1997 年改成狼人與村莊的主題。2016 年前後隨著網路節目在華語地區大紅，加入預言家、女巫等神職，就成了今天的「狼人殺」。",
+      "zh-Hans": "前身是 1986 年莫斯科大学的心理学课堂游戏《黑手党》，1997 年改成狼人与村庄的主题。2016 年前后随着网络节目在华语地区大火，加入预言家、女巫等神职，就成了今天的“狼人杀”。",
+      "en": "It began as Mafia, a party game created at Moscow State University in 1986. In 1997 it was retold with werewolves and a village, and later versions added roles like the Seer and Witch."
+    },
+    "goal": { "zh-Hant": "好人：找出所有狼人。狼人：殺光所有村民或所有神職。", "zh-Hans": "好人：找出所有狼人。狼人：杀光所有村民或所有神职。", "en": "Village: find every werewolf. Werewolves: eliminate all villagers or all power roles." },
+    "components": [
+      { "icon": "🃏", "label": { "zh-Hant": "身分牌 12 張", "zh-Hans": "身份牌 12 张", "en": "12 role cards" } },
+      { "icon": "🧑‍⚖️", "label": { "zh-Hant": "法官 1 人", "zh-Hans": "法官 1 人", "en": "1 moderator" } },
+      { "icon": "🐺", "label": { "zh-Hant": "狼人 ×4", "zh-Hans": "狼人 ×4", "en": "Werewolf ×4" } },
+      { "icon": "🔮", "label": { "zh-Hant": "預言家", "zh-Hans": "预言家", "en": "Seer" } },
+      { "icon": "🧪", "label": { "zh-Hant": "女巫", "zh-Hans": "女巫", "en": "Witch" } },
+      { "icon": "🏹", "label": { "zh-Hant": "獵人", "zh-Hans": "猎人", "en": "Hunter" } },
+      { "icon": "🛡️", "label": { "zh-Hant": "守衛", "zh-Hans": "守卫", "en": "Guard" } }
+    ],
+    "flow": [
+      { "icon": "🌙", "label": { "zh-Hant": "天黑請閉眼", "zh-Hans": "天黑请闭眼", "en": "Night falls" } },
+      { "icon": "🐺", "label": { "zh-Hant": "神職與狼人行動", "zh-Hans": "神职与狼人行动", "en": "Roles act" } },
+      { "icon": "☀️", "label": { "zh-Hant": "天亮公布死訊", "zh-Hans": "天亮公布死讯", "en": "Dawn reveals deaths" } },
+      { "icon": "🗳️", "label": { "zh-Hant": "發言、投票放逐", "zh-Hans": "发言、投票放逐", "en": "Discuss and vote" } }
+    ]
   },
   {
-    "id": "gomoku",
-    "players": "2",
-    "title": { "zh-Hant": "五子棋", "zh-Hans": "五子棋", "en": "Gomoku" },
-    "summary": { "zh-Hant": "先連成五顆的人獲勝，不採用禁手。", "zh-Hans": "先连成五颗的人获胜，不采用禁手。", "en": "First to make five in a row wins. No forbidden moves." }
+    "id": "uno", "icon": "🃏", "color": "#b4235a", "players": "2–10", "time": "15–30", "age": "7+", "weight": 1,
+    "title": { "zh-Hant": "UNO", "zh-Hans": "UNO", "en": "UNO" },
+    "summary": { "zh-Hant": "跟著顏色或數字出牌，剩一張要喊 UNO。常見玩法整理，非官方說明書。", "zh-Hans": "跟着颜色或数字出牌，剩一张要喊 UNO。常见玩法整理，非官方说明书。", "en": "Match color or number, and shout UNO at one card. A summary of common play, not the official rulebook." },
+    "intro": {
+      "zh-Hant": "1971 年由美國俄亥俄州的理髮師 Merle Robbins 和家人發明，後來由 Mattel 發行。規則簡單、節奏快，是全世界最常見的派對紙牌遊戲之一。",
+      "zh-Hans": "1971 年由美国俄亥俄州的理发师 Merle Robbins 和家人发明，后来由 Mattel 发行。规则简单、节奏快，是全世界最常见的派对纸牌游戏之一。",
+      "en": "Invented in 1971 by Merle Robbins, a barber in Ohio, and his family; it is now published by Mattel. Simple and fast, it is one of the world's most popular party card games."
+    },
+    "goal": { "zh-Hant": "最先把手牌出完的人贏這一局；累積 500 分贏整場。", "zh-Hans": "最先把手牌出完的人赢这一局；累积 500 分赢整场。", "en": "Empty your hand first to win the round; first to 500 points wins the game." },
+    "components": [
+      { "icon": "🟥", "label": { "zh-Hant": "四色數字牌", "zh-Hans": "四色数字牌", "en": "Number cards in 4 colors" } },
+      { "icon": "⏭️", "label": { "zh-Hant": "跳過", "zh-Hans": "跳过", "en": "Skip" } },
+      { "icon": "🔁", "label": { "zh-Hant": "迴轉", "zh-Hans": "反转", "en": "Reverse" } },
+      { "icon": "➕", "label": { "zh-Hant": "+2", "zh-Hans": "+2", "en": "Draw Two" } },
+      { "icon": "🌈", "label": { "zh-Hant": "萬能、萬能 +4", "zh-Hans": "万能、万能 +4", "en": "Wild, Wild Draw Four" } }
+    ],
+    "flow": [
+      { "icon": "👀", "label": { "zh-Hant": "看棄牌堆頂端", "zh-Hans": "看弃牌堆顶端", "en": "Check the top discard" } },
+      { "icon": "🃏", "label": { "zh-Hant": "出同色或同數字", "zh-Hans": "出同色或同数字", "en": "Match color or number" } },
+      { "icon": "📥", "label": { "zh-Hant": "出不了就抽一張", "zh-Hans": "出不了就抽一张", "en": "Otherwise draw one" } },
+      { "icon": "📣", "label": { "zh-Hant": "剩一張喊 UNO", "zh-Hans": "剩一张喊 UNO", "en": "One left: say UNO" } }
+    ]
   },
   {
-    "id": "reversi",
-    "players": "2",
-    "title": { "zh-Hant": "黑白棋", "zh-Hans": "黑白棋", "en": "Reversi" },
-    "summary": { "zh-Hant": "夾住對方的棋子翻成自己的顏色。", "zh-Hans": "夹住对方的棋子翻成自己的颜色。", "en": "Trap your opponent's discs to flip them to your color." }
-  },
-  {
-    "id": "big-two",
-    "players": "4",
+    "id": "big-two", "icon": "♠️", "color": "#1f5f8b", "players": "4", "time": "15–30", "age": "8+", "weight": 1,
     "title": { "zh-Hant": "大老二", "zh-Hans": "锄大地（大老二）", "en": "Big Two" },
-    "summary": { "zh-Hant": "撲克牌遊戲，最先出完手牌的人獲勝。", "zh-Hans": "扑克牌游戏，最先出完手牌的人获胜。", "en": "A card game: be the first to play all your cards." }
+    "summary": { "zh-Hant": "撲克牌遊戲，最先出完手牌的人獲勝。", "zh-Hans": "扑克牌游戏，最先出完手牌的人获胜。", "en": "A card game: be the first to play all your cards." },
+    "intro": {
+      "zh-Hant": "在華南、香港、台灣和東南亞流行的撲克牌遊戲，因為 2 是最大的牌而得名。各地規則細節不同，例如順子能不能用 A、2 接頭尾，最好開始前先講好。",
+      "zh-Hans": "在华南、香港、台湾和东南亚流行的扑克牌游戏，因为 2 是最大的牌而得名（大老二）。各地规则细节不同，例如顺子能不能用 A、2 接头尾，最好开始前先讲好。",
+      "en": "A card game popular in southern China, Hong Kong, Taiwan, and Southeast Asia, named for the 2 being the highest card. Details vary by region, such as whether A and 2 can wrap around in a straight, so agree before you start."
+    },
+    "goal": { "zh-Hant": "最先把 13 張手牌出完。", "zh-Hans": "最先把 13 张手牌出完。", "en": "Be the first to play all 13 of your cards." },
+    "components": [
+      { "icon": "🂡", "label": { "zh-Hant": "撲克牌 52 張", "zh-Hans": "扑克牌 52 张", "en": "52-card deck" } },
+      { "icon": "👥", "label": { "zh-Hant": "4 位玩家", "zh-Hans": "4 位玩家", "en": "4 players" } }
+    ],
+    "flow": [
+      { "icon": "♣️", "label": { "zh-Hant": "梅花 3 先出", "zh-Hans": "梅花 3 先出", "en": "3 of clubs leads" } },
+      { "icon": "⬆️", "label": { "zh-Hant": "出同型更大的牌", "zh-Hans": "出同型更大的牌", "en": "Beat with the same type" } },
+      { "icon": "🙅", "label": { "zh-Hant": "或者喊過", "zh-Hans": "或者喊过", "en": "Or pass" } },
+      { "icon": "🔄", "label": { "zh-Hant": "都過就重新出", "zh-Hans": "都过就重新出", "en": "All pass: lead again" } }
+    ]
+  },
+  {
+    "id": "chess", "icon": "♞", "color": "#5d6b78", "players": "2", "time": "10–60", "age": "8+", "weight": 3,
+    "title": { "zh-Hant": "西洋棋", "zh-Hans": "国际象棋", "en": "Chess" },
+    "summary": { "zh-Hant": "國王、皇后、騎士與城堡，將死對方的國王。", "zh-Hans": "王、后、马与车，将死对方的王。", "en": "Kings, queens, knights, and rooks: checkmate the enemy king." },
+    "intro": {
+      "zh-Hant": "源自約 6 世紀印度的「恰圖蘭卡」，經波斯傳到阿拉伯世界和歐洲。15 世紀末皇后和主教的走法變強，大致形成今天的規則。",
+      "zh-Hans": "源自约 6 世纪印度的“恰图兰卡”，经波斯传到阿拉伯世界和欧洲。15 世纪末后和象的走法变强，大致形成今天的规则。",
+      "en": "It descends from chaturanga, played in India around the 6th century, and spread through Persia to the Arab world and Europe. In the late 15th century the queen and bishop became stronger, giving roughly today's rules."
+    },
+    "goal": { "zh-Hant": "將死對方的國王。", "zh-Hans": "将死对方的王。", "en": "Checkmate the opponent's king." },
+    "components": [
+      { "icon": "🏁", "label": { "zh-Hant": "8×8 棋盤", "zh-Hans": "8×8 棋盘", "en": "8×8 board" } },
+      { "icon": "♚", "label": { "zh-Hant": "國王", "zh-Hans": "王", "en": "King" } },
+      { "icon": "♛", "label": { "zh-Hant": "皇后", "zh-Hans": "后", "en": "Queen" } },
+      { "icon": "♜", "label": { "zh-Hant": "城堡 ×2", "zh-Hans": "车 ×2", "en": "Rook ×2" } },
+      { "icon": "♝", "label": { "zh-Hant": "主教 ×2", "zh-Hans": "象 ×2", "en": "Bishop ×2" } },
+      { "icon": "♞", "label": { "zh-Hant": "騎士 ×2", "zh-Hans": "马 ×2", "en": "Knight ×2" } },
+      { "icon": "♟", "label": { "zh-Hant": "士兵 ×8", "zh-Hans": "兵 ×8", "en": "Pawn ×8" } }
+    ],
+    "flow": [
+      { "icon": "♙", "label": { "zh-Hant": "白方先走", "zh-Hans": "白方先走", "en": "White moves first" } },
+      { "icon": "♞", "label": { "zh-Hant": "移動一枚棋子", "zh-Hans": "移动一枚棋子", "en": "Move one piece" } },
+      { "icon": "⚔️", "label": { "zh-Hant": "可以吃子", "zh-Hans": "可以吃子", "en": "Capture if you can" } },
+      { "icon": "👑", "label": { "zh-Hant": "將軍要解除", "zh-Hans": "将军要解除", "en": "Escape check" } }
+    ]
+  },
+  {
+    "id": "xiangqi", "icon": "帥", "color": "#b42318", "players": "2", "time": "20–60", "age": "8+", "weight": 3,
+    "title": { "zh-Hant": "中國象棋", "zh-Hans": "中国象棋", "en": "Xiangqi (Chinese chess)" },
+    "summary": { "zh-Hant": "楚河漢界，將死對方的將帥。", "zh-Hans": "楚河汉界，将死对方的将帅。", "en": "Checkmate the opposing General across the River." },
+    "intro": {
+      "zh-Hant": "流傳上千年的中國傳統棋類，現代的棋盤與棋子大約在宋代定型。棋盤中間的「楚河漢界」借用了楚漢相爭的典故。",
+      "zh-Hans": "流传上千年的中国传统棋类，现代的棋盘与棋子大约在宋代定型。棋盘中间的“楚河汉界”借用了楚汉相争的典故。",
+      "en": "A traditional Chinese game played for well over a thousand years; its modern board and pieces took shape around the Song dynasty. The River across the middle recalls the rivalry between the states of Chu and Han."
+    },
+    "goal": { "zh-Hant": "將死對方的帥（將）。", "zh-Hans": "将死对方的帅（将）。", "en": "Checkmate the opponent's General." },
+    "components": [
+      { "icon": "🏯", "label": { "zh-Hant": "9×10 棋盤", "zh-Hans": "9×10 棋盘", "en": "9×10 board" } },
+      { "icon": "帥", "label": { "zh-Hant": "帥／將", "zh-Hans": "帅／将", "en": "General" } },
+      { "icon": "車", "label": { "zh-Hant": "車 ×2", "zh-Hans": "车 ×2", "en": "Chariot ×2" } },
+      { "icon": "馬", "label": { "zh-Hant": "馬 ×2", "zh-Hans": "马 ×2", "en": "Horse ×2" } },
+      { "icon": "炮", "label": { "zh-Hant": "炮 ×2", "zh-Hans": "炮 ×2", "en": "Cannon ×2" } },
+      { "icon": "兵", "label": { "zh-Hant": "兵／卒 ×5", "zh-Hans": "兵／卒 ×5", "en": "Soldier ×5" } }
+    ],
+    "flow": [
+      { "icon": "🔴", "label": { "zh-Hant": "紅方先走", "zh-Hans": "红方先走", "en": "Red moves first" } },
+      { "icon": "♟", "label": { "zh-Hant": "移動一枚棋子", "zh-Hans": "移动一枚棋子", "en": "Move one piece" } },
+      { "icon": "⚔️", "label": { "zh-Hant": "可以吃子", "zh-Hans": "可以吃子", "en": "Capture if you can" } },
+      { "icon": "🛡️", "label": { "zh-Hant": "被將軍要解除", "zh-Hans": "被将军要解除", "en": "Escape check" } }
+    ]
+  },
+  {
+    "id": "gomoku", "icon": "⚫", "color": "#1c2433", "players": "2", "time": "5–20", "age": "6+", "weight": 1,
+    "title": { "zh-Hant": "五子棋", "zh-Hans": "五子棋", "en": "Gomoku" },
+    "summary": { "zh-Hant": "先連成五顆的人獲勝，不採用禁手。", "zh-Hans": "先连成五颗的人获胜，不采用禁手。", "en": "First to make five in a row wins. No forbidden moves." },
+    "intro": {
+      "zh-Hant": "用圍棋的棋盤和棋子就能玩的連珠遊戲，在中國與日本都流傳已久。因為黑棋先下比較佔便宜，正式比賽（連珠）會限制黑棋的某些下法。",
+      "zh-Hans": "用围棋的棋盘和棋子就能玩的连珠游戏，在中国与日本都流传已久。因为黑棋先下比较占便宜，正式比赛（连珠）会限制黑棋的某些下法。",
+      "en": "A five-in-a-row game played with a Go board and stones, long popular in China and Japan. Because moving first is a big advantage, tournament play (Renju) restricts some of Black's moves."
+    },
+    "goal": { "zh-Hant": "先在橫、直或斜線上連成五顆。", "zh-Hans": "先在横、直或斜线上连成五颗。", "en": "Be first to line up five stones in a row." },
+    "components": [
+      { "icon": "🔲", "label": { "zh-Hant": "15×15 棋盤", "zh-Hans": "15×15 棋盘", "en": "15×15 board" } },
+      { "icon": "⚫", "label": { "zh-Hant": "黑棋", "zh-Hans": "黑棋", "en": "Black stones" } },
+      { "icon": "⚪", "label": { "zh-Hant": "白棋", "zh-Hans": "白棋", "en": "White stones" } }
+    ],
+    "flow": [
+      { "icon": "⚫", "label": { "zh-Hant": "黑方先下", "zh-Hans": "黑方先下", "en": "Black goes first" } },
+      { "icon": "📍", "label": { "zh-Hant": "在空點放一顆", "zh-Hans": "在空点放一颗", "en": "Place one stone" } },
+      { "icon": "🖐️", "label": { "zh-Hant": "連成五顆就贏", "zh-Hans": "连成五颗就赢", "en": "Five in a row wins" } }
+    ]
+  },
+  {
+    "id": "reversi", "icon": "◐", "color": "#0e7c86", "players": "2", "time": "10–30", "age": "6+", "weight": 1,
+    "title": { "zh-Hant": "黑白棋", "zh-Hans": "黑白棋", "en": "Reversi" },
+    "summary": { "zh-Hant": "夾住對方的棋子翻成自己的顏色。", "zh-Hans": "夹住对方的棋子翻成自己的颜色。", "en": "Trap your opponent's discs to flip them to your color." },
+    "intro": {
+      "zh-Hant": "19 世紀末在英國出現的棋類遊戲。1970 年代日本推出的版本《奧賽羅》統一了開局擺法，讓它在全世界流行起來。",
+      "zh-Hans": "19 世纪末在英国出现的棋类游戏。1970 年代日本推出的版本《奥赛罗》统一了开局摆法，让它在全世界流行起来。",
+      "en": "A board game that appeared in England in the late 19th century. A Japanese version released in the 1970s, Othello, standardized the opening setup and made it popular worldwide."
+    },
+    "goal": { "zh-Hant": "結束時棋盤上自己顏色的棋子比較多。", "zh-Hans": "结束时棋盘上自己颜色的棋子比较多。", "en": "Have more discs of your color when the game ends." },
+    "components": [
+      { "icon": "🟩", "label": { "zh-Hant": "8×8 棋盤", "zh-Hans": "8×8 棋盘", "en": "8×8 board" } },
+      { "icon": "◐", "label": { "zh-Hant": "黑白兩面棋子", "zh-Hans": "黑白两面棋子", "en": "Two-sided discs" } }
+    ],
+    "flow": [
+      { "icon": "⚫", "label": { "zh-Hant": "黑方先下", "zh-Hans": "黑方先下", "en": "Black goes first" } },
+      { "icon": "🥪", "label": { "zh-Hant": "夾住對方棋子", "zh-Hans": "夹住对方棋子", "en": "Trap opposing discs" } },
+      { "icon": "🔄", "label": { "zh-Hant": "全部翻面", "zh-Hans": "全部翻面", "en": "Flip them all" } },
+      { "icon": "⏭️", "label": { "zh-Hant": "沒地方下就跳過", "zh-Hans": "没地方下就跳过", "en": "No move: pass" } }
+    ]
   }
 ]

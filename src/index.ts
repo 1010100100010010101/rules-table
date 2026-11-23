@@ -16,7 +16,22 @@ const PRESET_RE = /^[a-z0-9-]{2,40}$/;
 const SAMPLE_ID = "night-market";
 const TRANSLATE_MAX = 4000;
 
-type Preset = { id: string; players: string; sample?: boolean; title: Record<Lang, string>; summary: Record<Lang, string> };
+type L10n = Record<Lang, string>;
+type IconItem = { icon: string; label: L10n };
+type Preset = {
+  id: string; icon?: string; color?: string; players: string; time?: string; age?: string; weight?: number; sample?: boolean;
+  title: L10n; summary: L10n; intro?: L10n; goal?: L10n; components?: IconItem[]; flow?: IconItem[];
+};
+
+// 內建遊戲的介紹（圖示、背景、配件、流程），換成指定語言
+function presetView(p: Preset, lang: Lang) {
+  const items = (list?: IconItem[]) => (list ?? []).map((x) => ({ icon: x.icon, label: x.label[lang] }));
+  return {
+    id: p.id, icon: p.icon ?? "🎲", color: p.color ?? "#233a5e", players: p.players, time: p.time ?? "", age: p.age ?? "",
+    weight: p.weight ?? 1, sample: !!p.sample, title: p.title[lang], summary: p.summary[lang],
+    intro: p.intro?.[lang] ?? "", goal: p.goal?.[lang] ?? "", components: items(p.components), flow: items(p.flow),
+  };
+}
 
 function json(data: unknown, status = 200) {
   return Response.json(data, { status });
@@ -55,7 +70,7 @@ export default {
     // 內建遊戲清單
     if (path === "/api/presets") {
       const list = await presetList(env, request.url);
-      return json(list.map((p) => ({ id: p.id, players: p.players, sample: !!p.sample, title: p.title[qLang], summary: p.summary[qLang] })));
+      return json(list.map((p) => presetView(p, qLang)));
     }
 
     // 內建遊戲的規則書（切好句子）；不帶 game 時是示例遊戲，首頁與單機版用
