@@ -148,8 +148,8 @@ $("pbtn").onclick = async () => {
   const box = $("pview"); box.replaceChildren();
   if (!r.ok) { box.append(el("div", "err", d.message)); return; }
   box.append(el("p", "muted small", `分成 ${d.count} 句，每一句都有固定編號。之後的裁定只能引用這些編號：`));
-  d.sentences.slice(0, 60).forEach((s) => { const row = el("div", "ev"); row.append(el("span", "cid", s.sid), el("span", null, s.text)); box.append(row); });
-  if (d.count > 60) box.append(el("p", "muted small", `還有 ${d.count - 60} 句`));
+  d.sentences.forEach((s) => { const row = el("div", "ev"); row.append(el("span", "cid", s.sid), el("span", null, s.text)); box.append(row); });
+  if (d.count > d.sentences.length) box.append(el("p", "muted small", `還有 ${d.count - d.sentences.length} 句`));
 };
 
 // ---------- 拍照上傳 ----------
